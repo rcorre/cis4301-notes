@@ -7,6 +7,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
 \graphicspath{ {img/} }
 
@@ -37,7 +38,18 @@
 \date{}
 
 \begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, text width=4.5em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
 \maketitle
+
 \section{Functions of a Database}
 \begin{itemize}
     \item \textbf{Create} - Add new records
@@ -254,7 +266,33 @@ Separate data from operations.
 \end{description}
 
 \subsection{Relational Model Example}
+
+\begin{figure}[h!]
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node [block] (ani) {animal};
+  \node [cloud, left of=ani] (weight) {weight};
+  \node [cloud, above of=ani] (eyes) {eyes};
+  \node [cloud, left of=eyes] (birthday) {birthday};
+  \node [decision, right of=ani] (owned) {owned by};
+  \node [block, right of=owned, node distance=3cm] (owner) {owner};
+  \node [cloud, above of=owner] (ssn) {\underline{ssn}};
+
+  \path [line] (weight) -- (ani);
+  \path [line] (birthday) -- (ani);
+  \path [line] (eyes) -- (ani);
+
+  \path [line] (ani) -- (owned);
+  \path [arrow] (owned) -- (owner);
+
+  \path [line] (ssn) -- (owner);
+\end{tikzpicture}
+\end{figure}
+The underline indicates that \underline{ssn} is the unique key for an owner. As
+the set (birthday, weight, eyes) uniquely identifies an animal, they do not need
+to be underlined.
+
 \begin{lstlisting}
+
 Animal(eyes:integer, birthDate:String, weight:double)
 (0001, 2, "November 2", 12.0) //cannot have 2 of these, must be unique
 (0002, 3, "November 2", 12.0)
@@ -279,9 +317,6 @@ Entity Relational Model:
     \item[one-many/many-one]: a pet only has one owner, an owner may have many
         pets
 \end{description}
-
-
-
 
 \section{Data Models}
 \subsection{Important Aspects}
@@ -333,7 +368,7 @@ for (Cats c : v) {
 \end{lstlisting}
 
 \begin{description}
-  \item[Efficient Access]{Get from disk and serialize}}
+  \item[Efficient Access]{Get from disk and serialize}
   \item[Efficient Modification]{Get from disk, deserialize, modify, reserialize}
   \item[Programmer Productivity]{}
 \end{description}
@@ -356,6 +391,28 @@ WHERE name = 'kizzy'
 
 \section{Entity Relationship (ER) Models}
 \subsection{Example ER Model}
+
+\begin{figure}[h!]
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node [block] (logins) {logins};
+  \node [cloud, left of=ani] (billing) {billing};
+  \node [cloud, above of=ani] (name) {\underline{name}};
+  \node [decision, right of=ani] (at) {at};
+  \node [block, right of=owned, node distance=3cm] (host) {host};
+  \node [cloud, above of=host] (hostname) {\underline{name}};
+  \node [cloud, right of=host] (url) {url};
+
+  \path [line] (billing) -- (logins);
+  \path [line] (name) -- (logins);
+
+  \path [line] (logins) -- (at);
+  \path [arrow] (at) -- (host);
+
+  \path [line] (hostname) -- (host);
+  \path [line] (url) -- (host);
+\end{tikzpicture}
+\end{figure}
+
 Host is a \textbf{strong entity} (can exist on its own)\\
 Login is a \textbf{weak entity} (cannot exist without Host)\\
 \begin{description}
