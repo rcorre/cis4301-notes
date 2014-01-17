@@ -7,7 +7,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
 \graphicspath{ {img/} }
 
@@ -42,12 +42,18 @@
 % Tikz general settings
 \tikzstyle{decision} = [diamond, draw, fill=blue!20, text width=4.5em,
   text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{decision2} = [diamond, double, draw, fill=blue!20, text width=4.5em,
+  text badly centered, node distance=3cm, inner sep=0pt]
 \tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{block2} = [rectangle, draw, double, fill=blue!20, text width=5em,
   text centered, minimum height=4em]
 \tikzstyle{line} = [draw, -]
 \tikzstyle{arrow} = [draw, -latex']
 \tikzstyle{cloud} = [draw, ellipse, fill=red!20, node distance=2.5cm,
   minimum height=2em]
+\tikzstyle{circle} = [draw, ellipse, fill=red!20, node distance=1.0cm,
+  minimum height=1em]
 \maketitle
 
 \section{Functions of a Database}
@@ -318,6 +324,27 @@ Entity Relational Model:
         pets
 \end{description}
 
+\begin{figure}[h!]
+\begin{tikzpicture}[node distance = 0cm, auto]
+  \node [circle] (a1) { };
+  \node [circle, below of=a1] (a2) { };
+  \node [circle, below of=a2] (a3) { };
+  \node [circle, below of=a3] (a4) { };
+
+  \node [circle, below right= 0.5cm and 2cm of a1] (b1) { };
+  \node [circle, below of=b1] (b2) { };
+  \node [circle, below of=b2] (b3) { };
+
+  \path [line] (a1) -- (b1);
+  \path [line] (a2) -- (b2);
+  \path [line] (a3) -- (b3);
+
+  \node [draw=blue, thick, 
+    fit=(a1) (a2) (a3) (a4) (b1) (b2) (b3)] {};
+\end{tikzpicture}
+\end{figure}
+
+
 \section{Data Models}
 \subsection{Important Aspects}
 \begin{description}
@@ -394,10 +421,10 @@ WHERE name = 'kizzy'
 
 \begin{figure}[h!]
 \begin{tikzpicture}[node distance = 2cm, auto]
-  \node [block] (logins) {logins};
+  \node [block2] (logins) {logins};
   \node [cloud, left of=ani] (billing) {billing};
   \node [cloud, above of=ani] (name) {\underline{name}};
-  \node [decision, right of=ani] (at) {at};
+  \node [decision2, right of=ani] (at) {at};
   \node [block, right of=owned, node distance=3cm] (host) {host};
   \node [cloud, above of=host] (hostname) {\underline{name}};
   \node [cloud, right of=host] (url) {url};
