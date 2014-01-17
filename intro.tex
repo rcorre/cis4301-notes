@@ -222,7 +222,7 @@ T_1; T_2 == 1
 \subsection{Physical Model Example}
 \begin{samepage}
 \begin{lstlisting}
-public class Animal\\
+public class Animal
 {
     public int Eyes;
     public String birthDate;
@@ -281,5 +281,97 @@ Entity Relational Model:
 \end{description}
 
 
+
+
+\section{Data Models}
+\subsection{Important Aspects}
+\begin{description}
+  \item[Efficient Access]{}
+  \item[Efficient Modification]{}
+  \item[Programmer Productivity]{}
+\end{description}
+
+\subsection{JAVA Data Access example}
+\begin{lstlisting}
+class Animal {}
+
+Animal kizzy = new Animal();
+kizzy.getEyeCount();
+
+Vector<Animals> cats = new Vector<>();
+cats.get(3).talk();
+
+// Options for serialization
+//serialize as binary 
+byte[]catBytes = cats.serialize();
+
+try {
+  http.push(catBytes);
+}
+
+//serialize as XML 
+<cats>
+  <cat name='kizzy'>
+    <name>kizzy</name>
+  </cat>
+</cat>
+
+//serialize as JSON
+cats = {
+  cat = [ { name: 'kizzy', eyes: 2}, { name: 'garfield' } ]
+}
+
+//later
+Vector<Cats> v = cats.unserialize(bytes);
+
+//search for a specific element
+for (Cats c : v) {
+  if (c.name = 'kizzy')
+    //found it
+}
+
+\end{lstlisting}
+
+\begin{description}
+  \item[Efficient Access]{Get from disk and serialize}}
+  \item[Efficient Modification]{Get from disk, deserialize, modify, reserialize}
+  \item[Programmer Productivity]{}
+\end{description}
+
+\subsection{SQL Data Access example}
+\begin{samepage}
+  \begin{lstlisting}[language=SQL]
+CREATE DATABASE cats;
+CREATE TABLE cats (
+  name VARCHAR,
+  eyes integer
+);
+INSERT cats VALUES ('kizzy', '2');
+
+SELECT name
+FROM cats
+WHERE name = 'kizzy'
+\end{lstlisting}
+\end{samepage}
+
+\section{Entity Relationship (ER) Models}
+\subsection{Example ER Model}
+Host is a \textbf{strong entity} (can exist on its own)\\
+Login is a \textbf{weak entity} (cannot exist without Host)\\
+\begin{description}
+  \item[Host] uniquely identified by name
+  \item[name] underlined - key for Host (must be unique)
+  \item[URL]
+  \item[At] Circular arrow - maps to a single Host, cannot exist without it
+  \item[Logins] A login requires a Host
+  \item[name] underlined - key for name (must be unique)
+  \item[Host]
+\end{description}
+
+\subsection{Schema Format}
+\begin{itemize}
+  \item{Host(\underline{name}, URL)}
+  \item{Logins(\underline{name}, \underline{host.name}), billing}
+\end{itemize}
 
 \end{document}
