@@ -324,26 +324,53 @@ Entity Relational Model:
         pets
 \end{description}
 
-\begin{figure}[h!]
-\begin{tikzpicture}[node distance = 0cm, auto]
-  \node [circle] (a1) { };
-  \node [circle, below of=a1] (a2) { };
-  \node [circle, below of=a2] (a3) { };
-  \node [circle, below of=a3] (a4) { };
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \caption{one-one relation}
+    \begin{tikzpicture}[node distance = 0cm, auto]
+      \node [circle] (a1) { };
+      \node [circle, below of=a1] (a2) { };
+      \node [circle, below of=a2] (a3) { };
+      \node [circle, below of=a3] (a4) { };
 
-  \node [circle, below right= 0.5cm and 2cm of a1] (b1) { };
-  \node [circle, below of=b1] (b2) { };
-  \node [circle, below of=b2] (b3) { };
+      \node [circle, below right= 0.5cm and 2cm of a1] (b1) { };
+      \node [circle, below of=b1] (b2) { };
+      \node [circle, below of=b2] (b3) { };
 
-  \path [line] (a1) -- (b1);
-  \path [line] (a2) -- (b2);
-  \path [line] (a3) -- (b3);
+      \path [line] (a1) -- (b1);
+      \path [line] (a2) -- (b2);
+      \path [line] (a3) -- (b3);
 
-  \node [draw=blue, thick, 
-    fit=(a1) (a2) (a3) (a4) (b1) (b2) (b3)] {};
-\end{tikzpicture}
+      \node [draw=blue, thick, 
+      fit=(a1) (a2) (a3) (a4) (b1) (b2) (b3)] {};
+    \end{tikzpicture}
+  \end{minipage}%
+  \begin{minipage}{.5\textwidth}
+    \centering
+    \caption{many-many relation}
+    \begin{tikzpicture}[node distance = 0cm, auto]
+      \node [circle] (a1) { };
+      \node [circle, below of=a1] (a2) { };
+      \node [circle, below of=a2] (a3) { };
+      \node [circle, below of=a3] (a4) { };
+
+      \node [circle, below right= 0.5cm and 2cm of a1] (b1) { };
+      \node [circle, below of=b1] (b2) { };
+      \node [circle, below of=b2] (b3) { };
+
+      \path [line] (a1) -- (b1);
+      \path [line] (a1) -- (b2);
+      \path [line] (a2) -- (b2);
+      \path [line] (a4) -- (b3);
+      \path [line] (a3) -- (b3);
+
+      \node [draw=blue, thick, 
+      fit=(a1) (a2) (a3) (a4) (b1) (b2) (b3)] {};
+    \end{tikzpicture}
+  \end{minipage}%
 \end{figure}
-
 
 \section{Data Models}
 \subsection{Important Aspects}
