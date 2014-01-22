@@ -35,7 +35,7 @@
 
 \title{CIS4301 Notes}
 \author{Ryan Roden-Corrent}
-\date{}
+\date{Wed Jan 22 10:49:19 EST 2014}
 
 \begin{document}
 \setlength\parindent{0pt}
@@ -304,7 +304,7 @@ Animal(eyes:integer, birthDate:String, weight:double)
 (0002, 3, "November 2", 12.0)
 
 //don't have to store entire animal, could just store certain columns
-var a[] = [2,3]  
+var a[] = [2,3]
 \end{lstlisting}
 
 \subsection{Thinking with Relational Models}
@@ -343,7 +343,7 @@ Entity Relational Model:
       \path [line] (a2) -- (b2);
       \path [line] (a3) -- (b3);
 
-      \node [draw=blue, thick, 
+      \node [draw=blue, thick,
       fit=(a1) (a2) (a3) (a4) (b1) (b2) (b3)] {};
     \end{tikzpicture}
   \end{minipage}%
@@ -366,7 +366,7 @@ Entity Relational Model:
       \path [line] (a4) -- (b3);
       \path [line] (a3) -- (b3);
 
-      \node [draw=blue, thick, 
+      \node [draw=blue, thick,
       fit=(a1) (a2) (a3) (a4) (b1) (b2) (b3)] {};
     \end{tikzpicture}
   \end{minipage}%
@@ -391,14 +391,14 @@ Vector<Animals> cats = new Vector<>();
 cats.get(3).talk();
 
 // Options for serialization
-//serialize as binary 
+//serialize as binary
 byte[]catBytes = cats.serialize();
 
 try {
   http.push(catBytes);
 }
 
-//serialize as XML 
+//serialize as XML
 <cats>
   <cat name='kizzy'>
     <name>kizzy</name>
@@ -442,169 +442,4 @@ FROM cats
 WHERE name = 'kizzy'
 \end{lstlisting}
 \end{samepage}
-
-\section{Entity Relationship (ER) Models}
-\subsection{Example ER Model}
-
-\begin{figure}[H]
-\begin{tikzpicture}[node distance = 2cm, auto]
-  \node [block2] (logins) {logins};
-  \node [cloud, left of=ani] (billing) {billing};
-  \node [cloud, above of=ani] (name) {\underline{name}};
-  \node [decision2, right of=ani] (at) {at};
-  \node [block, right of=owned, node distance=3cm] (host) {host};
-  \node [cloud, above of=host] (hostname) {\underline{name}};
-  \node [cloud, right of=host] (url) {url};
-
-  \path [line] (billing) -- (logins);
-  \path [line] (name) -- (logins);
-
-  \path [line] (logins) -- (at);
-  \path [arrow] (at) -- (host);
-
-  \path [line] (hostname) -- (host);
-  \path [line] (url) -- (host);
-\end{tikzpicture}
-\end{figure}
-
-Host is a \textbf{strong entity} (can exist on its own)\\
-Login is a \textbf{weak entity} (cannot exist without Host)\\
-\begin{description}
-  \item[Host] uniquely identified by name
-  \item[name] underlined - key for Host (must be unique)
-  \item[URL]
-  \item[At] Circular arrow - maps to a single Host, cannot exist without it
-  \item[Logins] A login requires a Host
-  \item[name] underlined - key for name (must be unique)
-  \item[Host]
-\end{description}
-
-\subsection{Schema Format}
-\begin{itemize}
-  \item{Host(\underline{name}, URL)}
-  \item{Logins(\underline{name}, \underline{host.name}), billing}
-\end{itemize}
-
-\pagebreak
-\section{ER Diagrams}
-\begin{figure}[h!]
-  \centering
-  \caption{Example ER Diagram}
-\begin{tikzpicture}[node distance = 2cm, auto]
-  \node [block] (stars) {stars};
-  \node [cloud, above of=stars] (name) {\underline{name}};
-  \node [cloud, above left of=stars] (DoB) {\underline{DoB}};
-  \node [cloud, left of=stars] (other) {\ldots};
-  \node [decision, right of=stars] (contracts) {contracts};
-  \node [cloud, above of=contracts] (salary) {salary};
-  \node [block, right =1.5cm of contracts] (movies) {movies};
-  \node [cloud, above of=movies] (title) {\underline{title}};
-  \node [block, below of=contracts] (studios) {studios};
-  \node [cloud, left of=studios] (room) {\underline{room}};
-
-  \path [line] (stars) -- (name);
-  \path [line] (stars) -- (DoB);
-  \path [line] (stars) -- (other);
-  \path [line] (stars) -- (contracts);
-  \path [line] (contracts) -- (movies);
-  \path [line] (contracts) -- (salary);
-  \path [line] (title) -- (movies);
-  \path [line] (studios) -- (room);
-
-  \path [arrow] (contracts) -- (studios);
-
-\end{tikzpicture}
-\end{figure}
-\begin{description}
-    \item[stars-movies]{many-many}
-    \item[stars-studios]{many-one}
-    \item[movies-studios]{many-one}
-\end{description}
-An \underline{underlined attribute} indicates a key for the entity. If there
-are no underlined attributes for an entity, the entire collection of attributes
-is the unique identifier for that entity.\\
-A star can only be associated with one studio, but a studio can be associated
-with many stars.\\
-A movie can only be associated with one studio, but a studio can be associated
-with many movies.\\\\
-\textbf{Schema:}
-\begin{itemize}
-    \item{stars(\underline{name}, \underline{DoB}, \ldots)}
-    \item{stars(\underline{title}, )}
-    \item{Contracts(\underline{StudioName}, \underline{starname},
-        \underline{DoB}, \underline{movie-title}, salary)}
-\end{itemize}
-%MAKE THIS A TABLE
-%
-Example Contracts:\\
-\begin{itemize}
-    \item{(Ricky R, Jaws, MGM)}
-    \item{(Ricky R, Batman, WB)}
-    \item{(Michael Keaton, Batman, WB)}
-\end{itemize}
-StudioName, StarName, and MovieTitle are all required to uniquely identify a
-contract.
-
-\subsection{Multiple Key Example}
-\begin{figure}[H]
-  \centering
-  \caption{A car is uniquely identified by the tuple (make,model,color,year)}
-  \begin{tikzpicture}[node distance = 2cm, auto]
-    \node [block] (car) {car};
-    \node [cloud, above of=car] (make) {make};
-    \node [cloud, above left of=car] (model) {model};
-    \node [cloud, above right of=car] (color) {color};
-    \node [cloud, right of=car] (year) {year};
-    \path [line] (car) -- (make);
-    \path [line] (car) -- (model);
-    \path [line] (car) -- (color);
-    \path [line] (car) -- (year);
-  \end{tikzpicture}
-\end{figure}
-\subsection{Weak Entity Example}
-\begin{figure}[H]
-  \centering
-  \caption{A car cannot exist without a VIN issued by a Dealer}
-  \begin{tikzpicture}[node distance = 2cm, auto]
-    \node [block2] (car) {car};
-    \node [cloud, above of=car] (make) {make};
-    \node [cloud, above left of=car] (model) {model};
-    \node [cloud, above right of=car] (color) {color};
-    \node [cloud, right of=car] (year) {year};
-    \node [decision2, left=2cm of car] (issues) {Issues};
-    \node [block, left=2cm of issues] (dealer) {dealer};
-    \node [cloud, above of=issues] (VIN) {VIN};
-    \path [line] (car) -- (make);
-    \path [line] (car) -- (model);
-    \path [line] (car) -- (color);
-    \path [line] (car) -- (year);
-    \path [line] (car) -- (issues);
-    \path [line] (issues) -- (VIN);
-    \path [arrow] (issues) -- (dealer);
-  \end{tikzpicture}
-\end{figure}
-Issues(\underline{VIN},\underline{Dealer})
-
-\subsection{Another Example}
-\begin{figure}[H]
-  \centering
-  \caption{Example ER Diagram}
-\begin{tikzpicture}[node distance = 2cm, auto]
-  \node [block] (movies) {movies};
-  \node [decision, right of=movies] (owns) {owns};
-  \node [block, right of = owns] (studio) {studio};
-  \node [decision, right of=studio] (runs) {runs};
-  \node [block, right of = runs] (president) {president};
-
-  \path [line] (movies) -- (owns);
-  \path [line] (owns) -- (studio);
-  \path [arrow] (runs) -- (studio);
-  \path [arrow] (runs) -- (president);
-
-\end{tikzpicture}
-\end{figure}
-Every studio has 0 or 1 studio.\\
-Why is a president not a weak entity?\\
-I don't know?\\
-
 \end{document}
