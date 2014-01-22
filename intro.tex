@@ -196,14 +196,14 @@ In \textbf{multi-threaded} applications, race-conditions and deadlocks can occur
 while trying to execute transactions. Deadlock resolution must occur.
 Transactions are atomic - they need to happen all at once or not at all.
 The transaction manager must initiate \textbf{rollback} (undo) in case of an
-error. Transactions are run in isolation from other database operations. 
+error. Transactions are run in isolation from other database operations.
 
 \subsection{ACID}
 \begin{samepage}
 \begin{description}
     \item[Atomicity] transaction happens just once or not at all
     \item[Consistency] predictable ordering, same result every time
-    \item[Isolation] no interference between transactions 
+    \item[Isolation] no interference between transactions
     \item[Durability] no data missing after transaction
 \end{description}
 \end{samepage}
@@ -446,7 +446,7 @@ WHERE name = 'kizzy'
 \section{Entity Relationship (ER) Models}
 \subsection{Example ER Model}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \begin{tikzpicture}[node distance = 2cm, auto]
   \node [block2] (logins) {logins};
   \node [cloud, left of=ani] (billing) {billing};
@@ -523,22 +523,6 @@ Login is a \textbf{weak entity} (cannot exist without Host)\\
 An \underline{underlined attribute} indicates a key for the entity. If there
 are no underlined attributes for an entity, the entire collection of attributes
 is the unique identifier for that entity.\\
-
-\begin{figure}[h!]
-  \centering
-  \caption{A car is uniquely identified by the tuple (make,model,color,year)}
-  \begin{tikzpicture}[node distance = 2cm, auto]
-    \node [block] (car) {car};
-    \node [cloud, above of=car] (make) {make};
-    \node [cloud, above left of=car] (model) {model};
-    \node [cloud, above right of=car] (color) {color};
-    \node [cloud, right of=car] (year) {year};
-    \path [line] (car) -- (make);
-    \path [line] (car) -- (model);
-    \path [line] (car) -- (color);
-    \path [line] (car) -- (year);
-  \end{tikzpicture}
-\end{figure}
 A star can only be associated with one studio, but a studio can be associated
 with many stars.\\
 A movie can only be associated with one studio, but a studio can be associated
@@ -561,6 +545,22 @@ Example Contracts:\\
 StudioName, StarName, and MovieTitle are all required to uniquely identify a
 contract.
 
+\subsection{Multiple Key Example}
+\begin{figure}[H]
+  \centering
+  \caption{A car is uniquely identified by the tuple (make,model,color,year)}
+  \begin{tikzpicture}[node distance = 2cm, auto]
+    \node [block] (car) {car};
+    \node [cloud, above of=car] (make) {make};
+    \node [cloud, above left of=car] (model) {model};
+    \node [cloud, above right of=car] (color) {color};
+    \node [cloud, right of=car] (year) {year};
+    \path [line] (car) -- (make);
+    \path [line] (car) -- (model);
+    \path [line] (car) -- (color);
+    \path [line] (car) -- (year);
+  \end{tikzpicture}
+\end{figure}
 \subsection{Weak Entity Example}
 \begin{figure}[H]
   \centering
@@ -606,7 +606,5 @@ Issues(\underline{VIN},\underline{Dealer})
 Every studio has 0 or 1 studio.\\
 Why is a president not a weak entity?\\
 I don't know?\\
-
-
 
 \end{document}
