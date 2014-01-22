@@ -485,4 +485,128 @@ Login is a \textbf{weak entity} (cannot exist without Host)\\
   \item{Logins(\underline{name}, \underline{host.name}), billing}
 \end{itemize}
 
+\pagebreak
+\section{ER Diagrams}
+\begin{figure}[h!]
+  \centering
+  \caption{Example ER Diagram}
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node [block] (stars) {stars};
+  \node [cloud, above of=stars] (name) {\underline{name}};
+  \node [cloud, above left of=stars] (DoB) {\underline{DoB}};
+  \node [cloud, left of=stars] (other) {\ldots};
+  \node [decision, right of=stars] (contracts) {contracts};
+  \node [cloud, above of=contracts] (salary) {salary};
+  \node [block, right =1.5cm of contracts] (movies) {movies};
+  \node [cloud, above of=movies] (title) {\underline{title}};
+  \node [block, below of=contracts] (studios) {studios};
+  \node [cloud, left of=studios] (room) {\underline{room}};
+
+  \path [line] (stars) -- (name);
+  \path [line] (stars) -- (DoB);
+  \path [line] (stars) -- (other);
+  \path [line] (stars) -- (contracts);
+  \path [line] (contracts) -- (movies);
+  \path [line] (contracts) -- (salary);
+  \path [line] (title) -- (movies);
+  \path [line] (studios) -- (room);
+
+  \path [arrow] (contracts) -- (studios);
+
+\end{tikzpicture}
+\end{figure}
+\begin{description}
+    \item[stars-movies]{many-many}
+    \item[stars-studios]{many-one}
+    \item[movies-studios]{many-one}
+\end{description}
+An \underline{underlined attribute} indicates a key for the entity. If there
+are no underlined attributes for an entity, the entire collection of attributes
+is the unique identifier for that entity.\\
+
+\begin{figure}[h!]
+  \centering
+  \caption{A car is uniquely identified by the tuple (make,model,color,year)}
+  \begin{tikzpicture}[node distance = 2cm, auto]
+    \node [block] (car) {car};
+    \node [cloud, above of=car] (make) {make};
+    \node [cloud, above left of=car] (model) {model};
+    \node [cloud, above right of=car] (color) {color};
+    \node [cloud, right of=car] (year) {year};
+    \path [line] (car) -- (make);
+    \path [line] (car) -- (model);
+    \path [line] (car) -- (color);
+    \path [line] (car) -- (year);
+  \end{tikzpicture}
+\end{figure}
+A star can only be associated with one studio, but a studio can be associated
+with many stars.\\
+A movie can only be associated with one studio, but a studio can be associated
+with many movies.\\\\
+\textbf{Schema:}
+\begin{itemize}
+    \item{stars(\underline{name}, \underline{DoB}, \ldots)}
+    \item{stars(\underline{title}, )}
+    \item{Contracts(\underline{StudioName}, \underline{starname},
+        \underline{DoB}, \underline{movie-title}, salary)}
+\end{itemize}
+%MAKE THIS A TABLE
+%
+Example Contracts:\\
+\begin{itemize}
+    \item{(Ricky R, Jaws, MGM)}
+    \item{(Ricky R, Batman, WB)}
+    \item{(Michael Keaton, Batman, WB)}
+\end{itemize}
+StudioName, StarName, and MovieTitle are all required to uniquely identify a
+contract.
+
+\subsection{Weak Entity Example}
+\begin{figure}[H]
+  \centering
+  \caption{A car cannot exist without a VIN issued by a Dealer}
+  \begin{tikzpicture}[node distance = 2cm, auto]
+    \node [block2] (car) {car};
+    \node [cloud, above of=car] (make) {make};
+    \node [cloud, above left of=car] (model) {model};
+    \node [cloud, above right of=car] (color) {color};
+    \node [cloud, right of=car] (year) {year};
+    \node [decision2, left=2cm of car] (issues) {Issues};
+    \node [block, left=2cm of issues] (dealer) {dealer};
+    \node [cloud, above of=issues] (VIN) {VIN};
+    \path [line] (car) -- (make);
+    \path [line] (car) -- (model);
+    \path [line] (car) -- (color);
+    \path [line] (car) -- (year);
+    \path [line] (car) -- (issues);
+    \path [line] (issues) -- (VIN);
+    \path [arrow] (issues) -- (dealer);
+  \end{tikzpicture}
+\end{figure}
+Issues(\underline{VIN},\underline{Dealer})
+
+\subsection{Another Example}
+\begin{figure}[H]
+  \centering
+  \caption{Example ER Diagram}
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node [block] (movies) {movies};
+  \node [decision, right of=movies] (owns) {owns};
+  \node [block, right of = owns] (studio) {studio};
+  \node [decision, right of=studio] (runs) {runs};
+  \node [block, right of = runs] (president) {president};
+
+  \path [line] (movies) -- (owns);
+  \path [line] (owns) -- (studio);
+  \path [arrow] (runs) -- (studio);
+  \path [arrow] (runs) -- (president);
+
+\end{tikzpicture}
+\end{figure}
+Every studio has 0 or 1 studio.\\
+Why is a president not a weak entity?\\
+I don't know?\\
+
+
+
 \end{document}
