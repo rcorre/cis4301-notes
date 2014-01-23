@@ -51,7 +51,7 @@
 \tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
   text centered, minimum height=4em]
 \tikzstyle{line} = [draw, -]
-\tikzstyle{arrow} = [draw, -latex']
+\tikzstyle{arrow} = [draw, -latex', thick]
 \tikzstyle{arrow-round} = [draw, -), thick]
 \maketitle
 
@@ -132,9 +132,7 @@ Login is a \textbf{weak entity} (cannot exist without Host)\\
     \item[stars-studios]{many-one}
     \item[movies-studios]{many-one}
 \end{description}
-An \underline{underlined attribute} indicates a key for the entity. If there
-are no underlined attributes for an entity, the entire collection of attributes
-is the unique identifier for that entity.\\
+An \underline{underlined attribute} indicates a key for the entity. \\
 A star can only be associated with one studio, but a studio can be associated
 with many stars.\\
 A movie can only be associated with one studio, but a studio can be associated
@@ -156,8 +154,13 @@ Example Contracts:\\
 \end{itemize}
 StudioName, StarName, and MovieTitle are all required to uniquely identify a
 contract.
+\pagebreak
 
 \subsection{Multiple Key Example}
+If there are no underlined attributes for an entity, the entire collection of
+attributes is the unique identifier for that entity. Anything short of that is
+not sufficient to uniquely identify the entity.
+
 \begin{figure}[H]
   \centering
   \caption{A car is uniquely identified by the tuple (make,model,color,year)}
@@ -197,26 +200,81 @@ contract.
 \end{figure}
 Issues(\underline{VIN},\underline{Dealer})
 
-\subsection{Another Example}
+\subsection{Weak Entities and Referential Integrity}
+The difference between weak entities and referential integrity (the rounded
+arrowhead) can be subtle and confusing, so here's the deal:\\
+
 \begin{figure}[H]
   \centering
-  \caption{Example ER Diagram}
+  \caption{No Referential Integrity}
+  \label{weak-ref1}
 \begin{tikzpicture}[node distance = 2cm, auto]
   \node [entity] (movies) {movies};
   \node [relation, right of=movies] (owns) {owns};
-  \node [entity, right of = owns] (studio) {studio};
-  \node [relation, right of=studio] (runs) {runs};
-  \node [entity, right of = runs] (president) {president};
+  \node [attribute, left of=movies] (movie-name) {\underline{name}};
+  \node [entity, right = 1cm of owns] (studio) {studio};
+  \node [attribute, right of=studio] (studio-name) {\underline{name}};
 
+  \path [line] (movies) -- (movie-name);
   \path [line] (movies) -- (owns);
-  \path [line] (owns) -- (studio);
-  \path [arrow] (runs) -- (studio);
-  \path [arrow] (runs) -- (president);
-
+  \path [arrow] (owns) -- (studio);
+  \path [line] (studio) -- (studio-name);
 \end{tikzpicture}
 \end{figure}
-Every studio has 0 or 1 studio.\\
-Why is a president not a weak entity?\\
-I don't know?\\
+In Figure~\ref{weak-ref1}, the arrow indicates a \textbf{many-one} relation
+from movies to studio. This means that a movie may be owned by at most one
+studio. This allows for the possibility that a movie is \emph{not owned by any
+  studio}. If we want to enforce that a movie be owned by a studio, we must use
+a rounded arrowhead to represent \textbf{Referential Integrity}.
+
+\begin{figure}[H]
+  \centering
+  \caption{Referential Integrity}
+  \label{weak-ref2}
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node [entity] (movies) {movies};
+  \node [relation, right of=movies] (owns) {owns};
+  \node [entity, right = 1cm of owns] (studio) {studio};
+  \node [attribute, left of=movies] (movie-name) {\underline{name}};
+  \node [attribute, right of=studio] (studio-name) {\underline{name}};
+
+  \path [line] (movies) -- (owns);
+  \path [arrow-round] (owns) -- (studio);
+  \path [line] (movies) -- (movie-name);
+  \path [line] (studio) -- (studio-name);
+\end{tikzpicture}
+\end{figure}
+In Figure~\ref{weak-ref2}, the rounded arrow indicates a \textbf{many-one}
+relation with \textbf{Referential Integrity}. This means that for every movie
+entity, there must be a studio entity that it is associated with. Note that,
+even in this example, \textbf{movies is not a weak entity}. Why? Because even
+though a movie must be associated with a studio, locating a particular movie
+does not require any information about the producing studio. A movie can be
+uniquely identified with just its \underline{name}.\\
+What follows is a truly weak entity, based on an example a classmate posted on
+piazza:
+
+\begin{figure}[H]
+  \centering
+  \caption{Room: A Weak Entity}
+  \label{weak-ref3}
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node [entity-weak] (room) {room};
+  \node [relation-weak, right of=movies] (inside) {inside};
+  \node [entity, right = 1cm of owns] (building) {building};
+  \node [attribute, left of=movies] (number) {\underline{number}};
+  \node [attribute, right of=studio] (name) {\underline{name}};
+
+  \path [line] (room) -- (inside);
+  \path [arrow-round] (inside) -- (building);
+  \path [line] (room) -- (number);
+  \path [line] (building) -- (name);
+\end{tikzpicture}
+\end{figure}
+In Figure~\ref{weak-ref3}, room is a weak entity. This means that a room's
+number is not sufficient to uniquely identify it -- a building name is also
+required. As an example, the number G186 does not uniquely identify a room, but
+McCarty G186 does. Note that the referential integrity arrow is also necessary,
+as a room must be associated with a building.
 
 \end{document}
