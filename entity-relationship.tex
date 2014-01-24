@@ -277,4 +277,70 @@ required. As an example, the number G186 does not uniquely identify a room, but
 McCarty G186 does. Note that the referential integrity arrow is also necessary,
 as a room must be associated with a building.
 
+\section{Postgres}
+See \url{http://www.postgresql.org/docs/9.2/static/index.html} for full
+documentation.
+\subsection{SQL Server Commands}
+\begin{description}
+    \item[ ssh username@thunder.cise.ufl.edu ]{ssh into CISE thunder server}
+    \item[ psql -h postgres.cise.ufl.edu db ]{enter database db}
+    \item[\textbackslash ?] { view commands}
+    \item[\textbackslash l] {list databases}
+    \item[\textbackslash d] {to list relations}
+    \item[\textbackslash d] {to list relations}
+    \item[TRUNCATE TABLE mytable] {remove all data from table mytablej}
+    \item[DROP TABLE mytable] {completely remove table mytable}
+    \item[ALTER TABLE mytable DROP COLUMN date] {remove column date from mytable}
+\end{enumerate}
+
+\subsection{SQL Data Types}
+\begin{samepage}
+\begin{description}
+    \item[CHAR, CHAR(1)] {fixed number of strings available (e.g. gender: M,F)}
+    \item[VARCHAR(n)] {variable length strings up to specified size n}
+    \item[BIT(n)] {bit string - fixed sized n}
+    \item[BIT VARYING (n)] {Variable length bit string up to n bits}
+    \item[BOOLEAN] {}
+    \item[INT, INTEGER] {}
+    \item[SHORT INT] {}
+    \item[FLOAT,REAL] {single precision FP}
+    \item[DOUBLE] {Double precision FP}
+    \item[DECIMAL(n,d)] {fixed n digits above decimal, d below decimal}
+    \item[DATE] {'YYYY-MM-DD', can be added as string following preceding format}
+    \item[TIME] {'HH:MM:SS', seconds are in decimal (e.g. '15:00:02.5')}
+    \item[DATETIME] {}
+    \item[TIMESTAMP] {}
+\end{description}
+\end{samepage}
+
+\subsection{Example Database}
+\begin{figure}[H]
+  \centering
+  \caption{Example Database}
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node [entity] (weather) {weather};
+  \node [attribute, left of=weather] (city) {city};
+  \node [attribute, above left of=weather] (temp-high) {temp-high};
+  \node [attribute, above of=weather] (temp-lo) {temp-lo};
+  \node [attribute, above right of=weather] (prcp) {prcp};
+  \node [attribute, right of=weather] (date) {date};
+
+  \path [line] (weather) -- (city);
+  \path [line] (weather) -- (prcp);
+  \path [line] (weather) -- (date);
+  \path [line] (weather) -- (temp-lo);
+  \path [line] (weather) -- (temp-high);
+\end{tikzpicture}
+\end{figure}
+
+\begin{lstlisting}[language=SQL]
+CREATE TABLE weather (
+  city VARCHAR(80),   --this is a comment
+  temp_lo INT,
+  temp_hi INT,
+  prcp REAL,
+  date DATE,
+);
+\end{lstlisting}
+
 \end{document}
