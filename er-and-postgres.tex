@@ -280,7 +280,8 @@ as a room must be associated with a building.
 
 \section{Postgres}
 See \url{http://www.postgresql.org/docs/9.2/static/index.html} for full
-documentation.
+documentation.\\
+See \url{http://sqlfiddle.com/} for practice.
 \subsection{SQL Server Commands}
 \begin{description}
     \item[ ssh username@thunder.cise.ufl.edu ]{ssh into CISE thunder server}
@@ -336,11 +337,12 @@ documentation.
 
 \begin{lstlisting}[language=SQL]
 CREATE TABLE weather (
-  city VARCHAR(80),   --this is a comment
-  temp_lo INT,
-  temp_hi INT,
-  prcp REAL,
-  date DATE,
+  city    varchar(80) REFERENCES cities (name),
+  temp_lo int DEFAULT 70,   --use defaults to avoid null
+  temp_hi int,
+  prcp    real,
+  date    date,
+  PRIMARY KEY (city, date),
 );
 \end{lstlisting}
 

@@ -1,0 +1,218 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+% Java code with lstlisting
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true
+    tabsize=3
+}
+
+\title{CIS4301 Notes}
+\author{Ryan Roden-Corrent}
+\date{\today}
+
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+\section{Relational Algebra}
+See \url{http://cise.ufl.edu/class/cis4301sp14/slides/ra.ppt} for class slides
+on this. These notes are mostly a condensed version of the slides, the slides
+contain some nice table images to help you visualize the operations.
+
+\subsection{What is Relational Algebra?}
+\begin{description}
+    \item[Operators] {most common actions you execute on relations}
+    \item[Operands] {relations or variables that represent relations}
+\end{description}
+
+\subsection{Core Relational Algebra}
+\begin{description}
+    \item[Union,Intersection,Difference] {most common actions you execute on
+        relations} 
+    \item[Selection] {picking certain rows}
+    \item[Projection] {picking certain columns}
+    \item[Products/Joins] {compsitions of relations}
+    \item[Renaming] {of relations and attributes}
+\end{description}
+
+\subsubsection{Selection}
+$R1:=\sigma_c (R2)$\\
+C is a condition that refers to attributes or R2\\
+R1 is all tuples of R2 that satisfy C\\
+\begin{center}
+\begin{tabular}[H]{c||c}
+  Relation Sells: & $JoeMenu := \sigma_{bar="Joe's"}(Sells):$\\
+\begin{tabular}[H]{l|c|r}
+  bar & beer & price\\
+  \hline
+  Joe's & Bud & 2.50\\
+  Joe's & Miller & 2.75\\
+  Sue's & Bud & 2.50\\
+  Sue's & Miller & 3.00\\
+\end{tabular}
+&
+\begin{tabular}[H]{l|c|r}
+  bar & beer & price\\
+  \hline
+  Joe's & Bud & 2.50\\
+  Joe's & Miller & 2.75\\
+  Sue's & Bud & 2.50\\
+  Sue's & Miller & 3.00\\
+\end{tabular}
+\end{tabular}
+\end{center}
+
+
+\subsubsection{Projection}
+$R1 := \pi_L(R2)$\\
+L is a list of attributes from R2's schema\\
+R1 contains only the attributes of R2 listed in L (in the order they are
+listed)\\
+Set operation: removes duplicate tuples\\
+
+\subsubsection{Extended Projection}
+$R1 := \pi_L(R2)$\\
+Like projection, but L can contain arbitrary expressions involving attributes.
+Example: $\pi_{A+B->C,A,A}(R)$ will create a new table where the first column,
+C, is the sum of A and B, and the next two columns A1 and A2 are copies of the
+original A.
+
+\subsubsection{Product}
+$R3 := R1 X R2$
+\begin{itemize}
+    \item{pair each tuple t1 or R1 with each tuple t2 of R2}
+    \item{Concatenation $t_1 t_2$ is a tuple of $R_3$}
+    \item{Schema of R3 is the attributes of R1 and then R2, in order}
+    \item{Beware attribute A of same name in R1 and R2: use R1.A and R2.A}
+\end{itemize}
+Example: $R3 := R1 X R2$\\
+Duplicate column B, so use R1.B and R2.B to differentiate.
+
+\subsubsection{Theta Join}
+$R3 := R1 \Join_C R2$
+Equivalent to taking the product $R1 X R2$ and applying $\sigma_C$ to the
+result.\\
+$R \Join_{\theta} S \equiv \sigma_{\theta}(R X S)$\\
+C can be any boolean-values condition.
+
+\subsubsection{Natural Join}
+Remove duplicate columns, only return columns that naturally combine.
+$R3 := R1 \Join R2$
+
+\subsubsection{Renaming}
+Gives a new schema to a relation.\\
+$R1:= \rho_{R1(A_1,...,A_n)}(R2)$ or $R1(A_1,...,A_n) := R2$ (simplified
+notation)\\
+R1 is a relation with the same tuples as R2 but the attribtues $A_1,...,A_n$.
+
+\subsection{Building Complex Expressions}
+Combine operators with parentheses and precedence rules.\\
+Three notations:\\
+\begin{enumerate}
+    \item{Sequences of assignment statements}
+    \item{Expressions with several operators}
+    \item{Expression trees}
+\end{enumerate}
+\subsubsection{Operator Precedence}
+\begin{enumerate}
+    \item{$[\sigma,\pi,\rho]$ (highest)}
+    \item{$[X,\Join]$}
+    \item{$\cap$}
+    \item{$\cup$}
+\end{enumerate}
+
+
+\subsubsection{Expression Trees}
+Leaves are operands (variables or constant relations).\\
+Interior nodes are operators applied to children.\\
+\textbf{Example:}\\
+
+\begin{figure}[H]
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node (union) {$\cup$};
+
+  \node [below left of=union] (l1) {$\rho_{R(name)}$};
+  \node [below of=l1] (l2) {$\pi_{bar}$};
+  \node [below of=l2] (l3) {$\sigma_{price<3 AND beer="bud"}$};
+  \node [below of=l3] (l4) {$Sells$};
+
+  \node [below right of=union] (r1) {$\pi_{name}$};
+  \node [below of=r1] (r2) {$\sigma_{addr="Maple St."}$};
+  \node [below of=r2] (r3) {$Bars$};
+
+  \draw [<-] (union) -- (r1);
+  \draw [<-] (r1) -- (r2);
+  \draw [<-] (r2) -- (r3);
+  \draw [<-] (union) -- (l1);
+  \draw [<-] (l1) -- (l2);
+  \draw [<-] (l2) -- (l3);
+  \draw [<-] (l3) -- (l4);
+\end{tikzpicture}
+\caption{Find the names of all bars that are either on maple street or sell Bud
+for less than \$3}
+\end{figure}
+
+\subsection{Relational Algebra on Bags}
+A bag is like a set, but duplicate elements are allowed. SQL is a bag
+language. Operations like projection are more efficient on bags than on sets.
+\subsubsection{Bag Union}
+Just add elements together, including duplicates.\\
+$\{1,2,1\} \cup \{1,1,2,3,1\} = \{1,1,1,1,1,2,2,3\}$
+\subsubsection{Bag Intersection}
+Minimum number of duplicates in resulting set.\\
+$\{1,2,1,1\} \cap \{1,2,1,3\} = \{1,1,2\}$
+\subsubsection{Bag Difference}
+Result contains all tuples in first relation that aren't in the second.\\
+$\{1,2,1,1\} - \{1,2,3\} = {1,1}$
+\subsubsection{Bag Laws != Set Laws}
+Set union is \textbf{idempotent}, (result does not change if applied multiple
+times.)\\
+For a bag union, if x appears n times in S, then it appears 2n times in union.
+
+\section{Why SQL?}
+\begin{description}
+    \item[SELECT]{desired attributes}
+    \item[FROM]{one or more tables}
+    \item[WHERE]{some condition holds}
+\end{description}
+\end{document}
