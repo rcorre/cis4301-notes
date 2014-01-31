@@ -210,9 +210,188 @@ times.)\\
 For a bag union, if x appears n times in S, then it appears 2n times in union.
 
 \section{Why SQL?}
+Say what to do rather than how to do it.
 \begin{description}
     \item[SELECT]{desired attributes}
     \item[FROM]{one or more tables}
     \item[WHERE]{some condition holds}
 \end{description}
+
+\begin{description}
+    \item[Beers]{desired attributes}
+    \item[FROM]{one or more tables}
+    \item[WHERE]{some condition holds}
+\end{description}
+
+\subsection{Example:}
+Names of beers made by Anheuser-Busch:
+\begin{lstlisting}[language=SQL]
+  SELECT name
+  FROM Beers
+  WHERE manf = 'Anheuser-Busch'
+\end{lstlisting}
+
+\begin{table}[H]
+  \begin{tabular}{|c|c|}
+    \hline
+    name & manf\\
+    \hline
+    Bud & Anheuser-Busch\\
+    \hline
+\end{tabular}
+\end{table}
+
+* indicates "all attributes in relation.
+\begin{lstlisting}[language=SQL]
+  SELECT name
+  FROM Beers
+  WHERE manf = 'Anheuser-Busch'
+\end{lstlisting}
+Try adding things to SELECT *
+
+Rename \emph{name} to \emph{beer} using \textbf{AS}
+\begin{lstlisting}[language=SQL]
+  SELECT name AS beer, manf
+  FROM Beers
+  WHERE manf = 'Anheuser-Busch'
+\end{lstlisting}
+
+\begin{lstlisting}[language=SQL]
+  SELECT bar, ber,
+  price*114 AS PriceInYen
+  FROM Beers
+\end{lstlisting}
+
+Using \textcolor{purple}{Likes(drinker, beer)}:
+Put 'likes Bud' in attribute whoLikesBud
+\begin{lstlisting}[language=SQL]
+  SELECT drinker
+    'likes Bud' AS whoLikesBud
+    FROM Likes
+    WHERE beer = 'Bud'
+\end{lstlisting}
+
+\subsection{Information Integration}
+Each \textbf{Data warehouse} manages several subdatabases that each have multiple tables.\\
+
+Example: Each bar has its own relation Menu(beer,price) tat we need to
+integrate.
+\begin{lstlisting}[language=SQL]
+  SELECT 'Joe''s Bar', beer, price
+  FROM Menu;
+\end{lstlisting}
+Do this for each bar to create a consistent schema, then take the Union.
+
+\subsection{Complex Conditions}
+Using \textcolor{purple}{Sells(bar, beer, price)}, find the price Joe charges
+for Bud.  
+\begin{lstlisting}[language=SQL]
+  SELECT price
+  FROM Sells
+  WHERE bar = 'Joe''s Bar' AND beer = 'Bud';
+\end{lstlisting}
+
+\subsection{Patterns}
+Usable on \textbf{VARCHAR}. Useable on \textbf{DATE, INT}? Maybe.
+\begin{verbatim}
+  <Attribute> LIKE <pattern>
+  <Attribute> iLIKE <pattern>   --case insensitive like
+  <Attribute> NOT LIKE <pattern>
+\end{verbatim}
+
+\begin{description}
+    \item[\%] {means any string}
+    \item[\_] {means any character}
+\end{description}
+
+Example: choose numbers with two digits
+\begin{lstlisting}[language=SQL]
+  FROM NUMBERS
+  WHERE number LIKE "__"
+\end{lstlisting}
+Example: choose numbers with at least two digits
+\begin{lstlisting}[language=SQL]
+  FROM NUMBERS
+  WHERE number LIKE "__%"
+\end{lstlisting}
+Find drinkers with phone number starting with 555.
+\begin{lstlisting}[language=SQL]
+  SELECT name
+  FROM Drinkers
+  WHERE phone LIKE '%555-_ _ _ _';
+\end{lstlisting}
+
+\subsection{NULL Values}
+NULL could mean:
+\begin{description}
+    \item[Missing Value]{we know it exists but dont have value}
+    \item[Inapplicable]{e.g. spouse of unmarried person}
+\end{description}
+
+NULLs can be tricky, try to avoid if possible.\\
+\subsubsection{3-valued logic}
+TRUE = 1, FALSE = 0, UNKNOWN = 1/2\\
+AND = MIN, OR=MAX, NOT(x) = 1-x\\
+Ex:
+\begin{verbatim}
+TRUE AND (FALSE OR NOT(UNKNOWN)) = MIN(1, MAX(0, (1-1/2)))
+\end{verbatim}
+Start on innermost paren and change truth values to numeric values.
+E.g. NOT(UNKNOWN) = (1-1/2)
+
+\subsubsection{Surprising Example}
+\begin{table}[H]
+  \begin{tabular}{|c|c|c|}
+    \hline
+    bar & beer & price\\
+    \hline
+    Joes & Bud & NULL\\
+    \hline
+\end{tabular}
+\end{table}
+
+\begin{lstlisting}[language=SQL]
+  SELECT bar
+  FROM Sells
+  WHERE price < 2.00 OR price >= 2.00;
+\end{lstlisting}
+The comparisons become UNKNOWN because they are undefined for NULL.\\
+Result is 
+\begin{verbatim}
+  NULL OR NULL
+  Max(1/2,1/2) = 1/2
+\end{verbatim}
+Expected to get everything, got nothing
+
+\subsection{Multirelation Queries}
+Distinguish between attributes of same name by 
+"relation.attribute"
+
+\subsubsection{Examples}
+Using \textcolor{purple}{Likes(drinker,beer), Frequents(drinker, bar)},
+find the beers liked by at least one person who frequents Joe's.
+\begin{lstlisting}[language=SQL]
+  SELECT beer
+  FROM Likes, Frequents
+  WHERE Bar = 'Joes' AND
+    Frequents.drinker = 
+      Likes.drinker;
+\end{lstlisting}
+A theta join $\Join_{=}$ is used to equate the drinker attribute from each table.
+Can be done in any order.\\
+For example:
+
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node (c0) {$\pi_{beer}$};
+  \node [below of = c0] (c1) {$\Join_{drinker=drinker}$};
+  \node (r2) [below right of = c1] {$\sigma_{bar='joes'}$};
+  \node (r3) [below of = r2] {Frequents};
+  \node (l2) [below left of = c1] {Likes};
+
+  \draw [<-] (l2) -- (c1);
+  \draw [<-] (c1) -- (r2);
+  \draw [<-] (r2) -- (r3);
+  \draw [<-] (c0) -- (c1);
+\end{tikzpicture}
+
 \end{document}
