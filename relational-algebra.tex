@@ -216,13 +216,6 @@ Say what to do rather than how to do it.
     \item[FROM]{one or more tables}
     \item[WHERE]{some condition holds}
 \end{description}
-
-\begin{description}
-    \item[Beers]{desired attributes}
-    \item[FROM]{one or more tables}
-    \item[WHERE]{some condition holds}
-\end{description}
-
 \subsection{Example:}
 Names of beers made by Anheuser-Busch:
 \begin{lstlisting}[language=SQL]
@@ -280,7 +273,8 @@ integrate.
   SELECT 'Joe''s Bar', beer, price
   FROM Menu;
 \end{lstlisting}
-Do this for each bar to create a consistent schema, then take the Union.
+Do this for each bar to create a consistent schema, then take the Union.\\
+\textbf{Note}: the repeated single quote is used to escape the nested quote.
 
 \subsection{Complex Conditions}
 Using \textcolor{purple}{Sells(bar, beer, price)}, find the price Joe charges
@@ -393,5 +387,123 @@ For example:
   \draw [<-] (r2) -- (r3);
   \draw [<-] (c0) -- (c1);
 \end{tikzpicture}
+
+
+\section{Multirelational Queries}
+\subsection{Joining Two Relations}
+Find the beers liked by at least one person who frequents Joe's
+\begin{lstlisting}[language=SQL]
+  SELECT beer
+  FROM Likes, Frequents
+  WHERE bar = 'Joes' AND
+    Frequents.drinker = 
+      Likes.drinker;
+\end{lstlisting}
+Same as a $\Join_{Frequents.drinker and Likes.drinker}$
+
+\subsection{Self-Join}
+Get all pairs of beers that have same manufacturer and a different name.
+\begin{lstlisting}[language=SQL]
+  SELECT b1.name, b2.name
+  FROM Beers b1, Beers b2 --avoid naming conflicts
+  WHERE b1.manf = b2.manf AND
+    b1.name < b2.name;
+\end{lstlisting}
+Why use \fbox{$<$} instead of \fbox{$<>$}? $<$ will order the results and get
+rid of duplicates.
+
+\subsection{Subqueries}
+A parenthisized SELECT-FROM-WHERE statement
+
+\begin{lstlisting}[language=SQL]
+  SELECT beer
+  FROM Likes, (SELECT drinker
+    FROM Frequents                  --create a table of drinkers who frequent joes
+    WHERE bar = 'Joes') AS JD       --and call that table JD
+  WHERE Likes.Drinker = JD.drinker  --now operate on that table
+\end{lstlisting}
+
+\begin{tikzpicture}[node distance = 2cm, auto]
+  \node (c0) {$\Join_{Likes.drinker=JD.drinker}$};
+
+  \node (r3) [below right of = c0] {$\rho_{frequents->JD}$};
+  \node (r2) [below of = r3] {$\pi_{drinker}$};
+  \node (r1) [below of = r2] {$\sigma_{bar='joes'}$};
+  \node (r0) [below of = r1] {Frequents};
+
+  \node (l0) [below left of = c0] {Likes};
+
+  \draw [<-] (r0) -- (r1);
+  \draw [<-] (r1) -- (r2);
+  \draw [<-] (r2) -- (r3);
+  \draw [<-] (r3) -- (c0);
+  \draw [<-] (l0) -- (c0);
+\end{tikzpicture}
+
+\subsubsection{Query + Subquery Solution}
+Get the the bars where Miller is sold for the same price as bud at Joe's.
+\begin{lstlisting}[language=SQL]
+  SELECT bar
+  FROM Sells
+  WHERE beer = 'Miller' AND
+    price = (SELECT price   --get the price from a subquery
+    FROM Sells
+    WHERE bar = 'Joes'
+      AND beer = 'Bud'
+      LIMIT 1);       --Make sure you only get a single value
+\end{lstlisting}
+There is a runtime error if the subquery returns more than one value (hence the
+use of LIMIT).
+
+\subsubsection{IN}
+Get the name and manufacturer of each beer that Fred likes.
+\begin{lstlisting}[language=SQL]
+  SELECT *
+  FROM Beers
+  WHERE name IN (SELECT beer
+    FROM Likes
+    WHERE drinker = 'Fred');
+\end{lstlisting}
+
+\subsubsection{EXISTS}
+
+Correlated subquery: 
+Walk one-by-one through tuples.
+At each tuple, perform the WHERE check.
+b1 refers to the tuple being checked.
+\begin{lstlisting}[language=SQL]
+  SELECT name
+  FROM Beers b1
+  WHERE NOT EXISTS (  --only true if subquery returns empty set
+    SELECT *    --get manufacturers who have only one beer
+    FROM Beers
+    WHERE manf = b1.manf AND
+      name <> b1.name); --returns a tuple (manf, beer)
+\end{lstlisting}
+
+\textbf{EXISTS} looks at a table and finds out if the table returns any values.
+Either returns $\emptyset$ or a table of results. \textbf{NOT EXISTS}(query)
+returns true only if the result of query is $\emptyset$.
+Internal query returns beers where the manufacturer is 'Bud' and the name is not
+'Lite'.
+
+\subsubsection{ANY}
+$x = ANY (subquery)$ checks if  x equals at least one tuple in the subquery.
+\subsubsection{ALL}
+$x <> ALL(subquery)$ is true iff x is not equal to any tuple in the subquery.
+
+\subsubsection{DISTINCT}
+Remove duplicates
+
+\begin{lstlisting}[language=SQL]
+  SELECT x,y
+\end{lstlisting}
+
+\subsection{Union, Intersect, Difference}
+Set operators. Require that arguments have same schema. 
+
+\section{Bag Semantics}
+Just add ALL to any of the set operators e.g. $UNION ALL$.
+
 
 \end{document}
