@@ -503,7 +503,195 @@ Remove duplicates
 Set operators. Require that arguments have same schema. 
 
 \section{Bag Semantics}
-Just add ALL to any of the set operators e.g. $UNION ALL$.
+Just add ALL to any of the set operators e.g. UNION ALL.
+\begin{description}
+  \item[$\delta$]{remove duplicate tuples}
+  \item[$\tau$]{sort tuples}
+  \item[$\gamma$]{grouping and aggregation}
+\end{description}
 
+Sorting\\
+$R1 := \tau_L(R2)$\\
+L is a list of attributes to list by, listed in order of priority.
+
+\subsection{Aggregation Operators}
+Not operators of relational algebra, apply to an entire column.\\
+Builtins: SUM, AVG, COUNT, MIN, MAX\\
+Can define your own in postgres.
+
+\subsubsection{Grouping}
+$R1 := \gamma_L(R2)$\\
+\begin{tabular}{|c|c|c|}
+  \hline
+  A & B & C\\
+  \hline
+  1 & 2 & 3\\
+  \hline
+  4 & 5 & 6\\
+  \hline
+  1 & 2 & 5\\
+  \hline
+\end{tabular}
+$gamma_{A,B,AVG(C)->X}(R) = ??$\\
+First, group R by A and B.\\ 
+\begin{tabular}{|c|c|c|}
+  \hline
+  A & B & C\\
+  \hline
+  1 & 2 & 3\\
+  \hline
+  1 & 2 & 5\\
+  \hline
+  4 & 5 & 6\\
+  \hline
+\end{tabular}\\
+Then, average C within groups\\
+\begin{tabular}{|c|c|c|}
+  \hline
+  A & B & C\\
+  \hline
+  1 & 2 & 4\\
+  \hline
+  4 & 5 & 6\\
+  \hline
+\end{tabular}
+
+\subsection{Outerjoin}
+\begin{tabular}{|c|c|}
+  \hline
+  A & B\\ 
+  \hline
+  1 & 2\\
+  \hline
+  4 & 5\\
+  \hline
+\end{tabular}
+\begin{tabular}{|c|c|}
+  \hline
+  B & C\\ 
+  \hline
+  2 & 3\\
+  \hline
+  6 & 7\\
+  \hline
+\end{tabular}
+
+\begin{tabular}{|c|c|c|}
+  \hline
+  A & B & C\\ 
+  \hline
+  1 & 2 & 3\\
+  \hline
+  1 & 2 &  \\
+  \hline
+    & 6 &  7\\
+  \hline
+  4 & 5 &  \\
+  \hline
+    & 2 & 3\\
+  \hline
+  4 & 5 &  \\
+  \hline
+    & 6 &  7\\
+  \hline
+\end{tabular}
+
+\begin{tabular}{|c|c|c|}
+  \hline
+  A & B & C\\ 
+  \hline
+  1 & 2 & 3\\
+  \hline
+  4 & 5 & NULL\\
+  \hline
+  NULL & 6 & 7\\
+  \hline
+\end{tabular}
+
+\subsubsection{JOIN Modifiers}
+R OUTER JOIN S is the core of an outerjoin. Can be modified by
+\begin{itemize}
+    \item{NATURAL before JOIN}
+\end{itemize}
+
+\subsection{Aggregations}
+NOTE: NULL's are ignored in Aggregations.
+\subsubsection{Return a table with the single column AVG(Price).}
+\begin{lstlisting}[language=SQL]
+  SELECT AVG(price)
+  FROM Sells
+  WHERE beer = 'Bud';
+\end{lstlisting}
+
+\subsubsection{Return number of distinct prices for bud beers}
+\begin{lstlisting}[language=SQL]
+  SELECT COUNT(DISTINCT price)
+  FROM Sells
+  WHERE beer = 'Bud';
+\end{lstlisting}
+
+\subsection{Grouping}
+Follow SELECT-FROM-WHERE by GROUP-BY and a number of attributes
+
+\subsubsection{Get the Average price for each beer}
+\begin{lstlisting}[language=SQL]
+  SELECT Beer, AVG(price)
+  FROM Sells
+  GROUP BY beer;
+\end{lstlisting}
+Anything in GROUP BY must also be in SELECT.\\
+In relational algebra: 
+$\gamma_{beer,AVG(price)}$\\
+Result: 
+\begin{tabular}{|c|c|}
+  \hline
+  beer & AVG(price)\\ 
+  \hline
+  bud & 2.33\\ 
+  coors & 4.00\\ 
+  ... & ...\\
+\end{tabular}
+
+\subsubsection{Average Age by Gender}
+\begin{lstlisting}[language=SQL]
+  SELECT gender, AVG(age)
+  FROM People
+  GROUP BY age;
+\end{lstlisting}
+
+Result:
+\begin{tabular}{|c|c|}
+  \hline
+  gender & AVG(age)\\ 
+  \hline
+  M & 24\\ 
+  F & 23\\ 
+  \hline
+\end{tabular}
+
+\subsubsection{Illegal Example}
+\begin{lstlisting}[language=SQL]
+  SELECT bar, MIN(price)
+  FROM Sells
+  GROUP BY beer = 'Bud';
+\end{lstlisting}
+
+\subsection{Having}
+Get only certain rows based on a condition.
+\subsubsection{Get average age only for genders where it is greater than 24}
+\begin{lstlisting}[language=SQL]
+  SELECT gender, AVG(age)
+  FROM People
+  GROUP BY gender
+  HAVING AVG(age) > 23
+\end{lstlisting}
+Result:
+\begin{tabular}{|c|c|}
+  \hline
+  gender & AVG(age)\\ 
+  \hline
+  M & 24\\ 
+  \hline
+\end{tabular}
 
 \end{document}
