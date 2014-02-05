@@ -514,12 +514,7 @@ Sorting\\
 $R1 := \tau_L(R2)$\\
 L is a list of attributes to list by, listed in order of priority.
 
-\subsection{Aggregation Operators}
-Not operators of relational algebra, apply to an entire column.\\
-Builtins: SUM, AVG, COUNT, MIN, MAX\\
-Can define your own in postgres.
-
-\subsubsection{Grouping}
+\subsection{Grouping}
 $R1 := \gamma_L(R2)$\\
 \begin{tabular}{|c|c|c|}
   \hline
@@ -557,6 +552,8 @@ Then, average C within groups\\
 \end{tabular}
 
 \subsection{Outerjoin}
+\newsavebox\outerjoinexone
+\savebox\outerjoinexone {
 \begin{tabular}{|c|c|}
   \hline
   A & B\\ 
@@ -566,6 +563,9 @@ Then, average C within groups\\
   4 & 5\\
   \hline
 \end{tabular}
+}
+\newsavebox\outerjoinextwo
+\savebox\outerjoinextwo {
 \begin{tabular}{|c|c|}
   \hline
   B & C\\ 
@@ -575,7 +575,9 @@ Then, average C within groups\\
   6 & 7\\
   \hline
 \end{tabular}
-
+}
+\newsavebox\outerjoinexthree
+\savebox\outerjoinexthree {
 \begin{tabular}{|c|c|c|}
   \hline
   A & B & C\\ 
@@ -595,7 +597,9 @@ Then, average C within groups\\
     & 6 &  7\\
   \hline
 \end{tabular}
-
+}
+\newsavebox\outerjoinexfour
+\savebox\outerjoinexfour {
 \begin{tabular}{|c|c|c|}
   \hline
   A & B & C\\ 
@@ -607,6 +611,20 @@ Then, average C within groups\\
   NULL & 6 & 7\\
   \hline
 \end{tabular}
+}
+
+\begin{figure}[H]
+\begin{tikzpicture}[node distance = 4cm, auto]
+  \node (d)  {\usebox{\outerjoinexfour}};
+  \node (c) [above of = d]  {\usebox{\outerjoinexthree}};
+  \node (b) [above right of = c]  {\usebox{\outerjoinextwo}};
+  \node (a) [above left of = c]  {\usebox{\outerjoinexone}};
+
+  \path [arrow] (a) -| (c);
+  \path [arrow] (b) -| (c);
+  \path [arrow] (c.south) -| (d);
+\end{tikzpicture}
+\end{figure}
 
 \subsubsection{JOIN Modifiers}
 R OUTER JOIN S is the core of an outerjoin. Can be modified by
@@ -615,6 +633,9 @@ R OUTER JOIN S is the core of an outerjoin. Can be modified by
 \end{itemize}
 
 \subsection{Aggregations}
+Not operators of relational algebra, apply to an entire column.\\
+Builtins: SUM, AVG, COUNT, MIN, MAX\\
+Can define your own in postgres.\\
 NOTE: NULL's are ignored in Aggregations.
 \subsubsection{Return a table with the single column AVG(Price).}
 \begin{lstlisting}[language=SQL]
