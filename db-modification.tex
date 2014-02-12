@@ -1,0 +1,201 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+% Java code with lstlisting
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true
+    tabsize=3
+}
+
+\title{CIS4301 Notes: }
+\author{Ryan Roden-Corrent}
+\date{\today}
+
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+
+\section{Database Modifications}
+\subsection{Insert}
+\begin{lstlisting}[language=sql,caption=multiple value insertion]
+  INSERT INTO Likes
+  VALUES ('Sally', 'Bud'), ('Jim','Miller');  --comma separated tuples to enter
+\end{lstlisting}
+\subsubsection{Default Values}
+\begin{lstlisting}[language=sql,caption=price defaults to 5 if not specified]
+  ...,
+  price Real DEFAULT 5,   --make sure price is a reasonable, non-NULL value
+  ...,
+\end{lstlisting}
+\begin{lstlisting}[language=sql,caption=another default example]
+  CREATE TABLE Drinkers (
+    name CHAR(30) PRIMARY KEY,
+    addr CHAR(50)
+      DEFAULT '123 Sesame St.',
+    phone CHAR(16)
+  );
+\end{lstlisting}
+\subsubsection{Subqueries in insertion}
+\begin{lstlisting}[language=sql,caption=insertion via subquery]
+  INSERT INTO PotBuddies
+  (
+    SELECT d2.drinker
+    FROM Frequents d1, Frequents d2
+    WHERE d1.drinker = 'Sally AND
+    d2.drinker <> 'Sally' AND
+    d1.bar = d2.bar
+  );
+\end{lstlisting}
+Find all the drinkers at the bars Sally frequents and insert them into
+PotBuddies (Potential Buddies, what did you think it stands for?)\\
+\begin{tabular}{|c|c|}
+  \hline
+  d1.bar & d2.bar\\
+  \hline
+  'Sally' & NOT 'Sally'\\
+  'Sally' & NOT 'Sally'\\
+  \hline
+\end{tabular}
+
+\subsection{Deletion}
+\begin{lstlisting}[language=sql, caption=Sally no longer likes Bud]
+  DELETE FROM Likes
+  WHERE drinker = 'Sally' AND
+    beer = 'Bud';
+\end{lstlisting}
+Delete all rows where the drinker is 'Sally' and the beer is 'Bud'
+\begin{lstlisting}[language=sql,caption=clear out entire table]
+  DELETE FROM Likes;  -- no WHERE clause needed
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql,caption=delete with subquery]
+  DELETE FROM Beers b
+  WHERE EXISTS (  --check if another beer is made by the same manufacturer
+    SELECT name FROM Beers  --implicit join of Beers with itself
+    WHERE manf = b.manf AND
+      name <> b.name
+  );
+\end{lstlisting}
+Delete all beers where there is another beer by the same manufacturer.\\
+\begin{tabular}{|c|c|c}
+  \hline
+  name & manf&\\
+  \hline
+  Bud & Budweiser & mark as dirty\\
+  BudLite & Budweiser & mark as dirty\\
+  \hline
+\end{tabular}\\
+Delete is a \textbf{mark-and-sweep} process: first mark items for deletion, then
+delete all marked items. (If items were deleted immediately, it could disrupt
+the condition for deleting other items during the same deletion process).
+
+\subsection{Updates}
+\begin{lstlisting}[language=sql,caption=UPDATE template]
+  UPDATE <relation>
+  SET <list of attribute assignments>
+  WHERE <condition on tuples>;
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql,caption=Change Fred's Phone number]
+  UPDATE Drinkers
+  SET phone = '555-1212'
+  WHERE name = 'Fred';
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql,caption=set maximum price on beers]
+  UPDATE Sells
+  SET price = 4.00
+  WHERE price > 4.00;
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql,caption=add tax to price]
+  UPDATE Sells
+  SET price = 1.05 * price  --value can be result of a computation on attributes
+  WHERE price > 4.00;
+\end{lstlisting}
+
+\section{Constraints}
+\begin{description}
+    \item[constraint] relations enforced by DBMS
+    \item[trigger] only executed when a condition occurs
+\end{description}
+
+\begin{description}
+    \item[Keys] 
+    \item[Foreign-keys] referential integrity
+    \item[value-based] constrain value of attribute
+    \item[tuple-based] relationships between components
+    \item[assertions] boolean expression
+\end{description}
+
+\subsection{Keys}
+\subsubsection{Single Attribute Keys}
+\begin{lstlisting}[language=sql,caption=ensure names are unique]
+  CREATE TABLE Beers (
+    name CHAR(20) UNIQUE,   --note: name can still be NULL!
+    manf CHAR(20)
+  );
+\end{lstlisting}
+
+\subsubsection{Multi Attribute Keys}
+\begin{lstlisting}[language=sql,caption=tuple as a primary key]
+  CREATE TABLE Sells (
+  bar CHAR(20),
+  beer VARCHAR(20),
+  price REAL,
+  PRIMARY KEY (bar,beer));
+\end{lstlisting}
+
+\subsubsection{Foreign Keys}
+\subsection{Foreign Keys}
+Indicate that a key REFERENCES another relation and is used as a key.\\
+Referenced attributes must be declared PRIMARY KEY or UNIQUE.
+\begin{lstlisting}[language=sql,caption=tuple as a primary key]
+  CREATE TABLE Sells (
+  bar CHAR(20),
+  beer VARCHAR(20),
+  price REAL,
+  FOREIGN KEY (beer) REFERENCES Beer);
+\end{lstlisting}
+
+\end{document}
