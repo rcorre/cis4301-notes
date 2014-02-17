@@ -1,0 +1,135 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+% Java code with lstlisting
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true
+    tabsize=3
+}
+
+\title{CIS4301 Guest Speaker: App Prototyping}
+\author{Ryan Roden-Corrent}
+\date{\today}
+
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+
+\section{Users Goals Metrics}
+\begin{itemize}
+  \item Who is the user? What are their goals?
+  \item Come up with a "persona" to represent the people who will
+    be using your app.
+  \item Have general "metrics of success"
+  \item One-size-fits-all software doesn't really appeal to anyone in particular
+\end{itemize}
+
+\subsection{example}
+\begin{description}
+  \item[Developer]
+  \item[IT Manager]
+  \item[CIO]
+\end{description}
+
+\subsection{5 person useability studies}
+Often just testing with 5 people can give great insight into what works and
+what doesn't in terms of the user interface. Track the errors they make
+(thinking they were clicking on something when they really weren't) and tweak
+the software. Need to make sure you have the appropriate testers for the
+software.
+
+\section{Strategy}
+\begin{description}
+  \item [Exit Strategy] What will you do if it takes off?
+    Is it a full time project or just a project done out of curiosity?
+  \item [Defense] What makes your app different from what already exists?
+  \item [Funding source] dictates how you can build features
+\end{description}
+
+\subsection{Funding}
+\begin{description}
+  \item [bootstrap] Your own money, you dicate how to build the software
+  \item [grant] grants tend not to care as much how it is build, just whether
+    it achieves the end goal
+\end{description}
+With grants, need to know when to stop. Don't undervalue your time.
+
+\section{Flow}
+\begin{description}
+  \item[Flow Diagram] Create before writing code, can save time in the long run.
+  \item[Wire Frame] Representation of user interfaces. Each wireframe should
+    have an associated persona and goal. Appearance not important, very high
+    level
+  \item[Composite] Mock-up, generally looks better than wireframe
+  \item[Paper Prototype] Walk someone through using a paper version of the app
+  \item[Define MVP] Minimally Viable Product: what is the minimum required for
+    app to "work"
+  \item[Prioritizing Features] what are the most important features? What are
+    blocking features? In what order should features be completed so everyone
+    can work in parallel?
+  \item[Tickets] use goal tracker (e.g. Trello) and issue tracker (e.g. github
+    issues.)
+  \item[Sprints] define a time period for work, set backlog during planning
+    meeting, typically have once-a-day $\approx$ 15min "standup" meeting
+  \item[Quality Assurance] mutliple environments (work, staging/integration,
+    production). Test in an environment exactly like the "real-world". Run test
+    suites.
+  \item[Release]
+  \item[Retrospective]
+\end{description}
+
+\section{Common Trouble}
+\begin{description}
+  \item[Scope creep] Keep adding new features, which delays release and bloats
+    product
+  \item[Nebulous Hierarchy] can't have a "flat" team. Assign specialties or
+    lead roles to members.
+  \item[Too many stakeholders] Who "says yes" for a particular kind of decision?
+  \item[Automating too soon] don't over-engineer too soon. Just make it happen
+    as quick as possible
+\end{description}
+
+\section{Stack}
+Make sure you are using the appropriate technology for the project
+
+\end{document}
