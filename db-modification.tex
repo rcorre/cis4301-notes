@@ -159,15 +159,13 @@ the condition for deleting other items during the same deletion process).
     \item[constraint] relations enforced by DBMS
     \item[trigger] only executed when a condition occurs
 \end{description}
-
 \begin{description}
-    \item[Keys] 
+    \item[Keys] must be unique and non-null
     \item[Foreign-keys] referential integrity
     \item[value-based] constrain value of attribute
     \item[tuple-based] relationships between components
     \item[assertions] boolean expression
 \end{description}
-
 \subsection{Keys}
 \subsubsection{Single Attribute Keys}
 \begin{lstlisting}[language=sql,caption=ensure names are unique]
@@ -187,15 +185,140 @@ the condition for deleting other items during the same deletion process).
 \end{lstlisting}
 
 \subsubsection{Foreign Keys}
-\subsection{Foreign Keys}
 Indicate that a key REFERENCES another relation and is used as a key.\\
 Referenced attributes must be declared PRIMARY KEY or UNIQUE.
-\begin{lstlisting}[language=sql,caption=tuple as a primary key]
+\begin{lstlisting}[language=sql,caption=Foreign key]
+  CREATE TABLE Beers (
+    name CHAR(20) PRIMARY KEY,
+    manf CHAR(20));
   CREATE TABLE Sells (
-  bar CHAR(20),
-  beer VARCHAR(20),
-  price REAL,
-  FOREIGN KEY (beer) REFERENCES Beer);
+    bar CHAR(20),
+    beer CHAR(20) REFERENCES Beers(name),
+    price REAL);
 \end{lstlisting}
+\subsubsection{Enforcing Foreign Key Constraints}
+If there is a foreign key constraint from R to S, two violations are possible:
+\begin{itemize}
+  \item An insert/update to R introduces values not found in S
+  \item A delete/update to S causes some tuples of R to "dangle"
+\end{itemize}
+Actions Taken:
+\begin{description}
+  \item[Default] Reject the modification
+  \item[Cascade] {
+      Make the same changes in Sells
+      \begin{itemize}
+        \item Deleted beer: delete Sells tuple
+        \item Updated beer: change value in Sells
+      \end{itemize}
+    }
+  \item[Set NULL] Change the beer to NULL
+\end{description}
+
+Example Cascade:\\
+Delete Bud tuple from Beers $\rightarrow$ delete all tuples from sells that have
+beer = 'bud'
+Example Cascade:\\
+Delete Bud tuple from Beers $\rightarrow$ change tuples from sells that have
+beer = 'bud' to have beer = NULL
+
+\begin{lstlisting}[language=sql,caption=setting policy]
+  CREATE TABLE Sells (
+    bar CHAR(20),
+    beer CHAR(20) REFERENCES Beers(name),
+    price REAL,
+    FOREIGN KEY(beer)
+      REFERENCES Beers(name)
+      ON DELETE SET NULL
+      ON UPDATE CASCADE);
+\end{lstlisting}
+
+\subsubsection{Attribute level checks}
+Add CHECK(<condition>) to the declaration for the attribute.
+The condition may use the name of the attribute but
+\textcolor{red}{any other relation or attribute name must be in a subquery.}
+
+\begin{lstlisting}[language=sql,caption=attribute check]
+  CREATE TABLE Sells (
+    bar CHAR(20),
+    beer CHAR(20) CHECK (beer IN  --make sure beer exists in Beers relation
+      (SELECT name FROM Beers)),  --implementation of FOREIGN KEY with a CHECK
+    price REAL CHECK ( price <= 5.00)   --make sure price is >= 5.00
+  );
+\end{lstlisting}
+Select subqueries inside check (like above) are \textbf{not} supported in Postgres
+\begin{lstlisting}[language=sql,caption=tuple-based check]
+  CREATE TABLE Sells (
+    bar CHAR(20),
+    beer CHAR(20),
+    price REAL,
+    CHECK (bar = 'Joe''s' OR    --allow Joe to sell beer at > 5.00
+      price <= 5.00));
+  );
+\end{lstlisting}
+\begin{lstlisting}[language=sql,caption=operation in check]
+  CREATE TABLE Sells (
+    bar CHAR(20),
+    beer CHAR(20),
+    price REAL,
+    tax REAL DEFAULT .05,
+    CHECK (price * tax <= 5.00));
+\end{lstlisting}
+
+\subsubsection{Assertions}
+Can be messy, try to avoid. Just know that they are schema-level constraints
+\begin{lstlisting}[language=sql,caption=assertion]
+  CREATE ASSERTION NoRipoffBars CHECK (
+    NOT EXISTS (  --no bar may charge an average of more than 5.00
+      SELECT bar FROM Sells
+      GROUP BY bar
+      HAVING 5.00 < AVG(price)
+  ));
+\end{lstlisting}
+
+\subsection{Triggers}
+Motivation:
+\begin{itemize}
+  \item Assertions are powerful, but cannot turn them off.
+  \item attribute-level checks are controllable but not powerful
+  \item Triggers let the user decide when they should be checked.
+\end{itemize}
+
+Also known as \textbf{ECA (event-condition-action)} rule.
+\begin{description}
+  \item[Event] type of db modification (e.g. insert on sells)
+  \item[Condition] SQL boolean expression
+  \item[Action] SQL statement
+\end{description}
+
+Example: After every insertion on sells, check the Beers table to see if the
+beer you are trying to insert exists. If it doesn't, insert that name into the
+Beers table.
+\begin{lstlisting}[language=sql,caption=Trigger definition]
+  CREATE TRIGGER BeerTrig
+  AFTER INSERT ON Sells         --the event
+  REFERENCING NEW ROW AS NewTuple
+  FOR EACH ROM
+  WHEN (NewTuple.beer NOT IN    --the condition
+    (SELECT name FROM Beers))
+    INSERT INTO Beers(name)     --the action
+      VALUES(NewTuple.beer);
+\end{lstlisting}
+
+\subsubsection{Options}
+\begin{itemize}
+  \item CREATE TRIGGER $<name>$
+  \item {
+    CREATE OR REPLACE TRIGGER $<name>$
+  }
+\end{itemize}
+Triggers:
+\begin{itemize}
+  \item BEFORE
+  \item AFTER
+  \item INSTEAD OF - used for Views
+\end{itemize}
+
+
 
 \end{document}
