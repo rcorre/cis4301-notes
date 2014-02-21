@@ -321,4 +321,89 @@ Triggers:
 
 
 
+\section{Views}
+A relation defined in terms of stored tables (\textbf{base tables}) and other
+views
+\begin{lstlisting}[language=sql, caption=virtual view creation]
+  CREATE VIEW beer_view AS
+    SELECT beer, price
+    FROM Products
+    WHERE type='beer';
+\end{lstlisting}
+\begin{description}
+  \item[virtual] not stored in the database, just a query for constructing a
+    relation \textbf{(default)}
+  \item[materialized] actually constructed and stored
+\end{description}
+\begin{lstlisting}[language=sql, caption=virtual view usage]
+  SELECT Count(*)     --get number of beers that start with 'Bud'
+    FROM beer_view
+    WHERE name LIKE 'Bud\%'
+    GROUP BY name;
+\end{lstlisting}
+Views allow people to work with a part of the database without giving them full
+access.
+
+\subsection{Materialized Views}
+\begin{lstlisting}[language=sql, caption=materialized view]
+  CREATE MATERIALIZED VIEW ...
+\end{lstlisting}
+If a change is made to a base table that a virtual view is based on, the view is
+marked as dirty and must be reconstructed on the next access.
+A \textbf{materialized view} checks whether the update is relevant and performs
+that update on itself. For example, adding one element to the base table adds
+that element to the view.
+\subsection{Triggers on Views}
+\begin{itemize}
+  \item generally cannot modify a virtual view because it doesn't exist
+  \item INSTEAD OF lets us interpret view modifications in a sensible way
+\end{itemize}
+\subsubsection{Example}
+View Synergy has \textcolor{red}{(drinker, beer, bar)}
+
+\begin{lstlisting}[language=sql, caption=view trigger]
+  CREATE TRIGGER ViewTrig   --simulate insertion into Synergy
+  INSTEAD OF INSERT ON Synergy
+  REFERENCING NEW ROW AS n  --n: row you were trying to insert
+  FOR EACH ROW
+  BEGIN
+    INSERT INTO LIKES VALUES(n.drinker, n.beer);
+    INSERT INTO SELLS(bar,beer) VALUES(n.bar, n.beer);
+    INSERT INTO FREQUENTS VALUES(n.drinker, n.bar);
+  END;
+\end{lstlisting}
+\subsection{Data Warehouse Example}
+\begin{itemize}
+  \item WalMart stores every sale at every store
+  \item overnight, sales for the date are used to update a
+    \textcolor{red}{data warehouse}, which is a materialized view of the sales
+  \item the warehouse is used by analysts to predict trends
+\end{itemize}
+Might use a view to represent global scales in a signle table independent of
+local currencies.
+
+\subsection{Indexes}
+Indexes are data structures used to speed access to tuples of a relation given
+one or more attributes.
+It could be a hash table, but in a DMBS is is always a balanced search tree
+with giant nodes (a full disk page) called a \textbf{B-tree}
+\subsubsection{Example}
+\begin{lstlisting}[language=sql, caption=a long computation]
+  SELECT county Crime
+  FROM Crimes
+  WHERE State='FL';   --how many crimes were committed in florida
+\end{lstlisting}
+Creating an index on some columns of the table (for example, \textbf{state}).
+This would create a hash table where each key (a state) points to every
+instance of that state in the main table.
+
+\subsubsection{Another Example}
+Note: use $\backslash$ timing to measure speed in sql.
+\begin{lstlisting}[language=sql, caption=a long computation]
+  select count(*) from olympics where country = 'United States';
+\end{lstlisting}
+\begin{lstlisting}[language=sql, caption=create index to speed count]
+  CREATE INDEX country_idx ON olympics (country);
+\end{lstlisting}
+
 \end{document}
