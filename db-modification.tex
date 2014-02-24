@@ -321,7 +321,7 @@ Triggers:
 
 
 
-\section{Views}
+\section{Transactions, Views, and Indexes}
 A relation defined in terms of stored tables (\textbf{base tables}) and other
 views
 \begin{lstlisting}[language=sql, caption=virtual view creation]
@@ -398,12 +398,85 @@ This would create a hash table where each key (a state) points to every
 instance of that state in the main table.
 
 \subsubsection{Another Example}
-Note: use $\backslash$ timing to measure speed in sql.
+Note: use $\backslash$timing to measure speed in sql.
 \begin{lstlisting}[language=sql, caption=a long computation]
   select count(*) from olympics where country = 'United States';
 \end{lstlisting}
 \begin{lstlisting}[language=sql, caption=create index to speed count]
   CREATE INDEX country_idx ON olympics (country);
 \end{lstlisting}
+
+\section{SQL Functions}
+use $\backslash$s to list functions in your database.
+\subsection{User-defined Functions}
+\begin{lstlisting}[language=sql]
+SELECT a, CASE  WHEN a=1 THEN 'one'
+                WHEN a=2 THEN 'two'
+                ELSE 'don''t care'
+          END
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=sql, caption=example function]
+CREATE OR REPLACE FUNCTION add_em(x integer, y integer) RETURNS integer AS
+$$
+SELECT x + y;
+$$ LANGUAGE SQL;
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql, caption=alternate argument reference style]
+CREATE OR REPLACE FUNCTION add_em(x integer, y integer) RETURNS integer AS
+$$
+SELECT $1 + $2;   --bash-style argument references, same result as above
+$$ LANGUAGE SQL;
+\end{lstlisting}
+
+\begin{description}
+  \item[trusted languages] lua, perl, ect.
+  \item[untrusted languages] java, python, ect.
+\end{description}
+Untrusted languages could potentially execute damaging commands with superuser
+priveleges.
+
+\begin{lstlisting}[language=sql, caption=another function]
+--good practice to prefix function with owner name
+CREATE OR REPLACE FUNCTION cgrant_dont_carem(x integer) RETURNS void AS
+$$
+  DELETE FROM test
+    WHERE a < x;    --delete every entry in test where a is less than the arg
+$$ LANGUAGE SQL;
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql, caption=calling a function]
+  select cgrant_dont_care(3);
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql, caption=function with a range]
+--note: this is an error if the function above was previously defined
+--cannot replace function if changing signature
+CREATE OR REPLACE FUNCTION cgrant_dont_carem(start integer, end integer) RETURNS
+void AS
+$$
+  DELETE FROM test
+    WHERE a > start AND a < end;
+$$ LANGUAGE SQL;
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql, caption=function with a range (properly
+  defined)]
+--this will work
+CREATE FUNCTION cgrant_dont_carem(start integer, end integer) RETURNS
+void AS
+$$
+  DELETE FROM test
+    WHERE a > start AND a < end;
+$$ LANGUAGE SQL;
+\end{lstlisting}
+
+\begin{lstlisting}[language=sql, caption=delete function]
+  DROP FUNCTION cgrant_dont_care(integer);
+\end{lstlisting}
+
+\subsection{pgadmin}
 
 \end{document}
