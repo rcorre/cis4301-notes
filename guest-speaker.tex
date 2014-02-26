@@ -33,9 +33,9 @@
     tabsize=3
 }
 
-\title{CIS4301 Guest Speaker: App Prototyping}
+\title{CIS4301 Guest Speakers}
 \author{
-  Speaker: Dave Stanton (@gotoplanb)\\
+  Speakers: Dave Stanton (@gotoplanb), Sean Goldberg \\
   Notes: Ryan Roden-Corrent
 }
 \date{\today}
@@ -58,7 +58,7 @@
 \tikzstyle{arrow-round} = [draw, -), thick]
 \maketitle
 
-\section{App Development}
+\section{App Development (Dave Stanton)}
 \subsection{Users Goals Metrics}
 \begin{itemize}
   \item Who is the user? What are their goals?
@@ -136,6 +136,75 @@ With grants, need to know when to stop. Don't undervalue your time.
 \subsection{Stack}
 Make sure you are using the appropriate technology for the project
 
-\section{App Development}
+\section{Crowd Sourcing (Sean Goldberg)}
+\subsection{Big Data}
+\begin{description}
+  \item[Volume] Existing data waiting to process
+  \item[Velocity] Data in motion (Streaming)
+  \item[Variety] structured, unstructured, text, multimedia
+  \item[Veracity] data in doubt (inconsistency, incompleteness, ambiguity,
+    latency)
+\end{description}
+Want to organize this data. Example: Wikipedia info box.
+
+\subsection{Machine Learning}
+training set $\rightarrow$ learning algorithm $\rightarrow$ heuristic
+
+\subsubsection{Examples of use:}
+\begin{itemize}
+  \item Self-driving car
+  \item Machine translation (like Babel Fish from Hitchhiker's Guide)
+  \item Amazon reccommendations
+  \item Apple's Siri (natural language question $\rightarrow$ database query)
+  \item license plate processing
+  \item Watson (jeopardy playing robot)
+\end{itemize}
+
+\subsubsection{Current Machine Learning Limitations}
+\begin{itemize}
+  \item Natural Language Processing still limited
+\end{itemize}
+
+\subsection{Crowd Sourcing}
+Human processing power can make up for areas that machines lack. Try to combine
+human and machine computation to complete a goal.\\
+Bringing in a single human is not efficient. Need an effective way to source
+the collective knowledge of many humans.\\
+\subsubsection{Amazon Mechanical Turk}
+Provides a marketplace for sourcing human intelligence.
+\begin{itemize}
+  \item Make an open call for jobs
+  \item People sign up for jobs
+  \item People complete task with human intelligence
+  \item People get payed
+  \item Allows parallelization of tasks
+\end{itemize}
+Example use: Collecting Training data for an intelligent system. If you are
+training a system to identify emotions by looking at a picture, you need people
+to look at the pictures and classify them so the machine can learn from them.
+
+\subsubsection{TurKit}
+A programming toolkit that integrates human intelligence as subroutines in your
+code.
+
+\subsubsection{Soylent}
+A MS Word plugin using people to perform word processing tasks that are
+difficult fr a computer (shortening, proofreading, macro)
+
+\subsubsection{CrowdDb}
+Use human intelligence to correct and optimize a database in ways that are
+difficult for a machine.
+
+\subsubsection{DbPedia}
+Make wikipedia queryable like a database by using human intelligence.
+
+\subsection{CASTLE (Crowd Assisted System for Text Labeling and Extraction)}
+Converting unstructured text into a structured form (database) that can be
+queried.
+
+Combine probablilistic database with crowd knowledge.\\
+Run a machine learning algorithm over text to tag tokens. The algorithm
+generates a set of possible tags, each with a given correctness probablility.
+Identify uncertain tags and source them to humans by automatically posting HITs.
 
 \end{document}
