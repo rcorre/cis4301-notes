@@ -35,8 +35,9 @@
 
 \title{CIS4301 Guest Speakers}
 \author{
-  Speakers: Dave Stanton (@gotoplanb), 
-  Sean Goldberg(sean@cise.ufl.edu) \\
+  Speakers: Dave Stanton (@gotoplanb),
+  Sean Goldberg(sean@cise.ufl.edu)
+  Pierre St. Juste\\
   Notes: Ryan Roden-Corrent
 }
 \date{\today}
@@ -207,5 +208,108 @@ Combine probablilistic database with crowd knowledge.\\
 Run a machine learning algorithm over text to tag tokens. The algorithm
 generates a set of possible tags, each with a given correctness probablility.
 Identify uncertain tags and source them to humans by automatically posting HITs.
+
+\section{
+Distributed Databases and their applications: From DHTs to Memcache to Twister
+}
+By Pierre St. Juste\\
+\begin{itemize}
+  \item Distributed Hash Tables (Memcache, Dynamo)
+  \item Distributed Datastores (Bigtable, MongoDB)
+  \item Real Applications (Bitweav, Twister, Litter)
+\end{itemize}
+
+\subsection{Centralized Data Storage}
+\fbox{Presentation tier} $\leftrightarrow$
+\fbox{Application Tier} $\leftrightarrow$
+\fbox{Data Tier}\\
+Infeasible for large amounts of data with frequent access.
+\subsection{Distributed Data Storage}
+Increase performance through parallelism
+\subsubsection{Amazon Dynamo}
+\begin{itemize}
+  \item NoSQL key-value
+  \item Accesible via HTTP REST API
+  \item Data Auto-partitioned
+\end{itemize}
+Different macines responsible for storing different ranges of keys.
+Want to ensure key distribution is random to achieve good load balancing (need
+a strong hash function). Good load balancing can avoid performance bottleneck
+and network bottleneck.
+
+\subsubsection{Questions about key-value stores}
+\begin{description}
+  \item[handling replication?] Generate multiple key-val pairs with different
+    keys but same value
+  \item[load balancing?] Strong (sha1) hash of key
+  \item[map table to KV store?] map each sell to a key (e.g. key =
+    tablename\_primarykey\_column)
+\end{description}
+
+\subsection{Memcache}
+Designed to work alongside a database.
+\begin{itemize}
+  \item all information stored on disk
+  \item key-value pair has no data-type restrictions
+  \item read-only cache for information stored in DB
+  \item Memcache server failure is not critical
+\end{itemize}
+A number of memcache servers store information that is requested from DB. A
+request first checks the Memcache, and only has to check the DB if the
+requested value isn't present in the Memcache.
+
+\subsubsection{Limitations of key-value stores}
+\begin{itemize}
+  \item SQL like queries on DHT can be ineficcient
+\end{itemize}
+
+\subsection{Google Bigtable}
+\begin{itemize}
+  \item Read a single row or range
+  \item can request timestamp range
+  \item implemented as multi-map
+  \item sections of table stored as "tablets" across servers
+  \item meta data servers track location of tablets
+  \item key-value lookup performed to retrieve table contents
+  \item \textbf{More efficient SQL-like lookups}
+\end{itemize}
+
+\subsection{MongoDB}
+\begin{itemize}
+  \item Schema-free
+  \item Document oriented
+  \item Scaling and load-balancing through sharding
+  \item Store arbitrary objects directly in database
+\end{itemize}
+
+\subsubsection{Sharding}
+Break a key space evenly across servers.
+
+\subsection{Distributed Microblogging}
+\subsubsection{Twister}
+\begin{itemize}
+  \item P2P anonymous microblogging service
+  \item {
+    use Bitcoin for user registration
+    \begin{itemize}
+      \item everyone is a witness to other's transactions
+    \end{itemize}
+  }
+  \item {
+    use Bittorrent DHT for data storage
+    \begin{itemize}
+      \item download torrent file to get keys
+      \item values are IP addresses of people who have needed data
+      \item in this case, can be used to store tweets in a decentralized manner
+    \end{itemize}
+  }
+\end{itemize}
+\subsubsection{Litter}
+\begin{itemize}
+  \item each node runs a simple python webserver
+  \item each node uses SQLite database
+  \item Updates are pushed through IP Multicast
+  \item \url{https://github.com/ptony82/litter}
+\end{itemize}
 
 \end{document}
