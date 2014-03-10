@@ -11,33 +11,12 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows, matrix, positioning, fit}
 
-% Java code with lstlisting
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
-
-\lstset{frame=tb,
-    language=Java,
-    aboveskip=3mm,
-    belowskip=3mm,
-    showstringspaces=false,
-    columns=flexible,
-    basicstyle={\small\ttfamily},
-    numbers=none,
-    numberstyle=\tiny\color{gray},
-    keywordstyle=\color{blue},
-    commentstyle=\color{dkgreen},
-    stringstyle=\color{mauve},
-    breaklines=true,
-    breakatwhitespace=true
-    tabsize=3
-}
-
 \title{CIS4301 Guest Speakers}
 \author{
   Speakers: Dave Stanton (@gotoplanb),
   Sean Goldberg(sean@cise.ufl.edu)
-  Pierre St. Juste\\
+  Pierre St. Juste
+  Nick Antonelli (Grooveshark)\\
   Notes: Ryan Roden-Corrent
 }
 \date{\today}
@@ -312,4 +291,108 @@ Break a key space evenly across servers.
   \item \url{https://github.com/ptony82/litter}
 \end{itemize}
 
+\section{Grooveshark Architecture, Managing DB at Scale, NoSQL}
+\begin{itemize}
+  \item multi-tiered stack
+  \item CACHE EVERYTHING
+  \item ansynchronous code is your friend
+  \item different workloads $\rightarrow$ different DBMSes (don't make sql do
+    everything)
+\end{itemize}
+\subsection{The Website}
+\begin{itemize}
+  \item several front-end servers with load balancer
+  \item requests are routed to a random front-end server
+  \item only load some of the data synchronously
+  \item load most of the data asynchronously
+  \item get the user on the site as fast as possible!
+\end{itemize}
+\subsection{Gearman / Memcached}
+\begin{itemize}
+  \item Most frontend GS calls are asynchronous
+  \item gearman/memcached serve as buffer to data stores and a common
+    'language' for other services
+  \item gearman performs actions at behest of user
+\end{itemize}
+\subsubsection{Gearman}
+\begin{itemize}
+  \item Asynchronous task manager
+  \item job submitted to a queue
+  \item worker processes listen on queues, process jobs as they come in
+  \item stateless, workers just know what queues to listen on and what to do
+    upon job arrival
+\end{itemize}
+\subsubsection{Memcached}
+\begin{itemize}
+  \item distributed hash table
+  \item key-value store
+  \item each memcached process is a bucket
+  \item all library calls go to memcached first
+  \item eliminate unnecessary calls to data stores, reduce cost of data
+    retrieval
+\end{itemize}
+\subsection{Data Stores}
+\begin{itemize}
+  \item highly heterogenous environment (MariaDB, Percona, MongoDB ...)
+  \item not all data stores are made the same
+  \item different R/W tolerance due to differing data storage
+  \item each DBMS excels in certain areas
+\end{itemize}
+\begin{itemize}
+  \item only MySQL, Postgres, and Hive (kinda) use SQL
+  \item do not maintain same guarantees as SQL (could be good thing)
+  \item SQL: good for transactional, ACID complient storage, can be unwieldy
+  \item NoSQL: no ACID guarantees but is more flexible (good for e.g. comment
+    system)
+  \item CAP Theorem
+\end{itemize}
+Commonalities among data stores:\\
+\begin{itemize}
+  \item caching
+  \item indices!!!
+  \item backups
+\end{itemize}
+\subsubsection{MySQL}
+\begin{itemize}
+  \item primary backend, go-to unless there is a use case for a different DB
+  \item {
+      use open source forks instead of Oracle MySQL
+      \begin{itemize}
+        \item MariaDB
+        \item Percona
+      \end{itemize}
+    }
+  \item top-down topology
+  \item production master/slave
+  \item used by front-end servers exclusively
+\end{itemize}
+\subsubsection{MongoDB}
+\begin{itemize}
+  \item distributed NoSQL system: node awareness, eventual consistency
+  \item JSON-like syntax: type sensitive arrays and objects
+  \item indices: more sensitive than SQL counterparts
+\end{itemize}
+\begin{lstlisting}
+  use gs;
+  db.myColl.find({x:5})
+\end{lstlisting}
+\subsubsection{Hive/HBase}
+\begin{itemize}
+  \item Part of apache Hadoop project
+  \item Build on HDFS (Hadoop Filesystem)
+  \item {
+      Hive: ad-hoc data querying (data warehouse)
+      \begin{itemize}
+        \item transforms SQL to Map/Reduce job
+      \end{itemize}
+  }
+  \item HBase: column store, easy aggregation, write-heavy workloads
+\end{itemize}
+\subsubsection{Redis}
+\begin{itemize}
+  \item in memory
+  \item like memcached, but more fully featured
+  \item sorted sets, lists
+  \item mostly used for internal services
+\end{itemize}
 \end{document}
