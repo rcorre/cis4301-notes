@@ -1,0 +1,213 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+% Java code with lstlisting
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true
+    tabsize=3
+}
+
+\title{CIS4301 Notes: Database Design}
+\author{Ryan Roden-Corrent}
+\date{\today}
+
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+
+Note: Some class resources available here:\\
+\href{http://cise.ufl.edu/class/cis4301sp14/slides/fd.pdf}{Database Systems
+  Textbook}\\
+\href{http://cise.ufl.edu/class/cis4301sp14/slides/inference_rules.jpg}{Inference
+  Rules}\\
+\section{Functional Dependencies and Normalization}
+\subsection{Outline}
+\begin{itemize}
+  \item Informal Design Guidelines for Relation Schemas
+  \item Functional Dependencies
+  \item normal forms based on primary keys
+\end{itemize}
+
+\subsection{Outline}
+\begin{itemize}
+  \item {
+      Levels at which we can discuss \textbf{goodness}of relational schemas
+      \begin{itemize}
+        \item Logical (conceptual)
+        \item Implementation (physical storage)
+      \end{itemize}
+    }
+  \item {
+      Approaches to DB design
+      \begin{itemize}
+        \item Top down: start with large table, break down to details
+        \item Bottom Up: start with details, merge to create larger structure
+      \end{itemize}
+    }
+\end{itemize}
+\subsection{Informal Design Guidelines}
+\subsubsection{Measures of Quality}
+\begin{itemize}
+  \item make attribute semantics clear
+  \item Reduce redundant info in tuples
+  \item Reduce NULL values in tuples
+  \item Disallow possibility of creating spurious tuples
+\end{itemize}
+
+\subsubsection{Natural Join Example}
+Schema:\\
+EMP\_LOCS(Ename, Plocation)\\
+EMP\_PROJ(SSN, Pnumber, Hours, Pnme, Plocation)\\
+Want to use natural join to find out how many hours each employee worked at a
+location\\
+see
+\href{http://cise.ufl.edu/class/cis4301sp14/slides/natural_join0.jpg}{this} and
+\href{http://cise.ufl.edu/class/cis4301sp14/slides/natural_join0.jpg}{this}
+for the textbook problems\\
+note that the natural join introduces duplicate information
+\textcolor{red}{meaning is ambiguous}.
+
+\textbf{update anomaly:} need to update data in more than one spot. Sometimes
+these are unavoidable, so must be \textbf{documented well}.
+
+Triggers are useful in these, but can get messy.
+
+\subsubsection{Redundant Infor and Update Anomalies}
+\begin{itemize}
+  \item {Types: Insertion, Deletion, Modifications}
+  \item {Result of storing natural joins of base relations}
+  \item {Significant effect on storage stapce}
+\end{itemize}
+
+Deletion Anomaly Example:\\
+\begin{tabular}{|c|c|}
+\hline
+Team Name & Player\\
+\hline
+NULL & 12\\
+\hline
+\end{tabular}
+\begin{tabular}{|c|c|}
+\hline
+Playerid & pts\\
+\hline
+12 & 2\\
+\hline
+\end{tabular}
+Player 12 kicked off team, but still exists\\
+
+Insertion Anomaly Example:\\
+\begin{tabular}{|c|c|}
+\hline
+Team Name & Player\\
+\hline
+Gators & \\
+\hline
+Louisvile & \\
+\hline
+? & 12\\
+\hline
+\end{tabular}
+Must know team name before inserting player.
+
+\subsection{Why are NULLs bad?}
+\begin{itemize}
+  \item {Way croup many attributes together into a "fat" relation}
+  \item {Wasted storage space (reserves space in every column for that row)}
+\end{itemize}
+
+Suppose an essay relation has a text field that is a char(40000). A null essay
+will still reserve this space.
+
+\subsubsection{Guideline 4}
+\begin{itemize}
+  \item {Design relation schemas to be joined with equality conditions on
+      attributes that are appropriately related}
+  \item {guarantees no spurious tuples generated}
+\end{itemize}
+
+\subsection{Summary}
+\begin{itemize}
+  \item {anomalies cause redundant work}
+  \item {NULL wastes space}
+\end{itemize}
+
+\section{Functional Dependencies}
+denoted by $X \rightarrow Y$\\
+for any two tuples $t_1$ and $t_2$ in $r$ that have $t_1[X] = t_2[X]$, there
+must be a mapping $t_1[Y] = t_2[Y]$\\
+
+\begin{tabular}{c|c|c|c|c}
+  & W & X & Y & Z\\
+  \hline
+  $t_1$ &  & billy d & gators & \\
+  \hline
+  $t_2$ & & billy d & gators & \\
+  \hline
+\end{tabular}
+
+\begin{itemize}
+  \item {formal tool for analysis of relational schemas}
+  \item {detect and describe some of the above problems in precise terms}
+  \item {theory of functinal dependency}
+\end{itemize}
+
+\subsection{normal forms based on primary keys}
+\begin{itemize}
+  \item {normalization process}
+  \item {Approaches for relational schema design}
+\end{itemize}
+\begin{itemize}
+  \item {
+      takes a relation schema through a series of tests
+      \begin{itemize}
+        \item {certify whether it satisfies a certain normal form}
+        \item {proceeds in top-down fashion}
+      \end{itemize}
+    }
+  \item {ideally only want functional dependencies on primary keys (but there
+      is some leeway)}
+\end{itemize}
+
+\textbf{Example}:\\
+\end{document}
