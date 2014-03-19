@@ -209,5 +209,141 @@ must be a mapping $t_1[Y] = t_2[Y]$\\
       is some leeway)}
 \end{itemize}
 
-\textbf{Example}:\\
+\subsection{Normalization of Relations}
+\begin{itemize}
+  \item {
+      Nonadditive join Property
+      \begin{itemize}
+        \item {Extrememly critical}
+      \end{itemize}
+    }
+  \item {
+      Dependency preservation property
+      \begin{itemize}
+        \item {sometimes sacrificed for other factors}
+      \end{itemize}
+    }
+\end{itemize}
+\subsubsection{Keys and Attributes Participating in Keys}
+\begin{itemize}
+  \item {definition of \textbf{superset} and \textbf{key}}
+  \item {Candidate Key}
+  \item {
+    If more than one key in relation schema
+    \begin{itemize}
+      \item {one is primary}
+      \item {others are secondary}
+    \end{itemize}
+  }
+\end{itemize}
+a \textbf{superkey} determines all of the attributes in a set.
+
+\subsection{Armstrong's axioms}
+\textbf{Reflexive:}
+
+\textbf{Augmentation:}\\
+\textbf{Transitive:}
+\begin{math}
+  S \rightarrow R, R \rightarrow T => S \rightarrow T
+\end{math}
+
+\textbf{Decomposition:}
+\begin{math}
+  X \rightarrow YX => X \rightarrow Y, X \rightarrow Z
+\end{math}
+
+\textbf{Union:}
+
+\textbf{PseudoTransitivity:}
+\begin{math}
+  X \rightarrow Y, WY \rightarrow Z, WX \rightarrow Z
+\end{math}
+\subsubsection{Example}
+Decomposition:
+\begin{math}
+  pname \rightarrow pts, team\\
+  pname \rightarrow pts\\
+  pname \rightarrow team
+\end{math}
+
+\subsection{Closure}
+Full set of functional dependencies that can  created given an initial set of
+functional dependencies, denoted \textbf{F+}.
+
+\subsection{Properties}
+\begin{description}
+  \item[Non-additive join] shouldn't lose or gain information when performing a
+    join
+  \item[Dependency Preservation] dependencies should hold through decomposition
+\end{description}
+\subsection{Practical Normal Forms}
+\begin{itemize}
+  \item {Resulting designs are high quality}
+  \item {usually pay attention to normaliation up to 3NF, BCNF, of sometimes 4NF}
+\end{itemize}
+\subsubsection{First Normal Form}
+\begin{itemize}
+  \item {only attribute values permitted are single (atomic) values}
+\end{itemize}
+Example:\\
+\begin{tabular}{|c|c|c|}
+  \hline
+students & age & hometown \\
+  \hline
+patriczy & 21 & \{Jax, Warner Robins\} \\
+  \hline
+\end{tabular}\\
+This violates 1NF as hometown is a collection, and therefore not atomic. Could
+be solved with hometown mapping table:\\
+\begin{tabular}{|c|c|c|}
+  \hline
+ pyoung & 21 & jax\\
+  \hline
+ pyoung & 21 & Warner Robins\\
+  \hline
+\end{tabular}
+
+\subsubsection{Second Normal Form}
+\begin{itemize}
+  \item {based on \textbf{full functional dependency}}
+  \item {nonprime attribtes are associated with only part of a primary key on
+      which they are functionally dependent}
+\end{itemize}
+Example:\\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+ movie name & star  & film type & capacity\\
+  \hline
+ ... & ... & ... & ... \\
+  \hline
+\end{tabular}\\
+Functional dependencies:\\
+$moviename \rightarrow star$\\
+$filmtype \rightarrow Capacity$\\
+Could split into two tables:
+\begin{tabular}{|c|c|}
+  \hline
+ movie name & star  \\
+  \hline
+ ... & ... \\
+  \hline
+\end{tabular}
+\begin{tabular}{|c|c|}
+  \hline
+ filmtype & capacity  \\
+  \hline
+ ... & ... \\
+  \hline
+\end{tabular}\\
+Dependencies:\\
+$moviename \rightarrow star$\\
+$filmtype \rightarrow capacity$\\
+$star \rightarrow filmtype$\\
+Transitive rule relates filmtype to moviename.
+\subsubsection{Third Normal Form}
+\begin{itemize}
+  \item {Be in first normal form}
+  \item {Everything dependent on primary key}
+  \item {Dependencies on primary key must not be transitive}
+\end{itemize}
 \end{document}
