@@ -1,0 +1,141 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+% Java code with lstlisting
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true
+    tabsize=3
+}
+
+\title{CIS4301 Notes: Exam 2 Review}
+\author{Ryan Roden-Corrent}
+\date{\today}
+
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+
+\section{Things to Review}
+\begin{itemize}
+  \item {Normal Form: \textbf{1NF, 2NF, 3NF}}
+  \item {Functional Dependencies
+      \begin{itemize}
+        \item {6 Rules, \textbf{especially transitive}}
+      \end{itemize}
+    }
+  \item {More queries
+      \begin{itemize}
+        \item {GROUP BY}
+        \item {NULLs}
+        \item {Aggregates (and their behavior with regards to NULL)}
+      \end{itemize}
+    }
+  \item {Indices: When is it a good idea to use indexes?
+      \begin{itemize}
+        \item {For example, given a set of queries, use indices to speed it up}
+      \end{itemize}
+    }
+  \item {Views: virtual vs materialized (how are they updated?)}
+  \item {Foreign Keys, Check Constraints}
+  \item {Constraints
+      \begin{itemize}
+        \item {Table Level}
+        \item {Tuple Level}
+      \end{itemize}
+    }
+  \item {Triggers: After vs Before:
+    \begin{itemize}
+      \item {Before: Allows trigger to throw error state and stop further
+          modification}
+      \item {After: Ok if not too much to undo}
+    \end{itemize}
+  }
+\end{itemize}
+
+\section{Chapter Breakdown}
+Ch.3, Ch.5-9 are on the test.\\
+\subsection{Stuff you don't need to study:}
+\fbox{you \textcolor{red}{\textbf{DON'T}} need to know the following:}
+\begin{description}
+  \item[Ch.3] Closure FD, set cover,  BCNF, 4NF, 5NF
+  \item[Ch.5]
+  \item[Ch.6] 6.6.4-6.6.6
+  \item[Ch.7] 7.4
+  \item[Ch.8] 8.4
+  \item[Ch.9] 9.1 - 9.3, 9.5-9.7
+  \item[9.4] probably don't need to know stored procedures for quiz, but good to
+    know
+\end{description}
+
+\section{Indexes (Indices?)}
+An index can be thought of as a \textbf{hashtable} or \textbf{b-tree}.
+\begin{description}
+  \item[hashtable] {quick lookups, point queries
+      \begin{itemize}
+        \item {Point Query: Avoid scanning large set, go directly to record}
+      \end{itemize}
+    }
+  \item[b-tree] {Range Queries
+      \begin{itemize}
+        \item {very flat, holds alot of information}
+        \item {useful for e.g. get all items with $attribute > some\_value$}
+        \item {such a query would not work well with hashtable (repeated hash
+            value computation)}
+      \end{itemize}
+    }
+\end{description}
+\subsection{Why not always use Indices?}
+Some databases kinda do (e.g. MongoDB). However,
+If you index everything, you are creating alot of duplication. Creating a
+specialized data structure for every column \textbf{consumes excessive space},
+and \textbf{updates can take a long time}.
+\subsection{What if something is updated in database but not index}
+In general, must check if cached value is marked as "dirty".
+\section{Window Functions}
+Look them up on postgres docs, especially \textbf{rank()}.\\
+\begin{lstlisting}[language=sql,caption=rank example]
+  SELECT X, avg(salary) OVER (PARTITION BY X)
+  FROM G
+  GROUP BY X;
+\end{lstlisting}
+\end{document}
