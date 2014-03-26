@@ -1,0 +1,120 @@
+Welcome to Ubuntu 12.04.4 LTS (GNU/Linux 3.2.0-51-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+Authorized users and uses only.
+
+This is a bastion server, not a general computational facility. 
+Use this for small/limited jobs as needed. For more intensive 
+computations/compiles, please use this to connect to appropriate
+resources inside the CISE department.
+
+Please email consult@cise.ufl.edu with any questions or if you 
+need assistance locating more appropriate computing resources.
+
+http://cise.ufl.edu/help
+
+Last login: Wed Mar 26 09:48:07 2014 from 10.137.42.51 
+thunder:3% mkdir public_html 
+thunder:4% echo $SHELL 
+/usr/local/bin/tcsh
+thunder:5% echo 'this is how to set up your personal CISE webspace' 
+this is how to set up your personal CISE webspace
+thunder:6% chmod 755 public_html/ 
+thunder:7% cd public_html/ 
+thunder:8% touch index.html 
+thunder:9% echo 'find at www.cise.ufl.edu/~my_username' 
+find at www.cise.ufl.edu/~my_username
+thunder:10% chmod 644 index.html  
+thunder:11% which bash 
+/bin/bash
+thunder:12% echo 'why is my shell tcsh???' 
+why is my shell tcsh???
+thunder:13% mkdir cis4301sp14 
+thunder:14% chmod 755 cis4301sp14/ 
+thunder:15% cd cis4301sp14/ 
+thunder:16% touch README 
+thunder:17% touch hello.txt 
+thunder:18% vim README  
+thunder:20% chmod +644 README  
+thunder:21% pwd 
+/cise/homes/rcorrent/public_html/cis4301sp14
+thunder:22% chmod 664 hello.txt 
+thunder:23% echo '664 allows group write permission' 
+664 allows group write permission
+thunder:24% groups 
+stdnt
+thunder:26% mv hello.txt hello.txt 
+echo 'hello  .txt not interpreted as html ... change the extension' 
+hello.txt not interpreted as html ... change the extension
+thunder:27% mv hello.txt hello.html 
+thunder:28% cat hello.html  
+<html>
+    <head>
+    </head>
+
+    <body>
+        <p>This is my hello.txt website</p>
+    </body>
+</html>
+thunder:29% ls -l hello.html  
+-rw-rw-r--+ 1 rcorrent stdnt 106 Mar 26 10:06 hello.html
+thunder:30% ls 
+hello.html  README
+thunder:31% pwd 
+/cise/homes/rcorrent/public_html/cis4301sp14
+thunder:32% 'r      echo 'lets create a  n index' 
+lets create an index
+thunder:33% cp hello.html index.html 
+thunder:34% ls -lh 
+total 4.5K
+-rw-rw-r--+ 1 rcorrent stdnt 106 Mar 26 10:06 hello.html
+-rw-------+ 1 rcorrent stdnt 106 Mar 26 10:09 index.html
+-rw-r--r--+ 1 rcorrent stdnt  25 Mar 26 09:57 README
+thunder:35% echo 'note that permissions not preserved by cp' 
+note that permissions not preserved by cp
+thunder:36% chmod 664 index.html  
+thunder:37% echo 'lets try php' 
+lets try php
+thunder:38% cp index.html index.php 
+thunder:43% cat index.php  
+#!/usr/local/bin/php
+
+<html>
+    <head>
+        <title>Our First PHP Test File</title>
+    </head>
+    <body>
+        <?php 
+            print( "Hello World<br />"); 
+        ?>
+    </body>
+</html>
+thunder:44% cat htaccess 
+AddHandler cgi-script.php
+DirectoryIndex index.html index.php
+thunder:46% chmod 644 htaccess  
+thunder:47% ls -l 
+total 8
+-rw-rw-r--+ 1 rcorrent stdnt 106 Mar 26 10:06 hello.html
+-rw-r--r--+ 1 rcorrent stdnt  63 Mar 26 10:17 htaccess
+-rw-rw-r--+ 1 rcorrent stdnt 106 Mar 26 10:09 index.html
+-rw-------+ 1 rcorrent stdnt 198 Mar 26 10:16 index.php
+-rw-r--r--+ 1 rcorrent stdnt  25 Mar 26 09:57 README
+thunder:48% chmod 711 index.php
+index.html  index.php    
+thunder:48% chmod 711 index.php  
+thunder:49% ls -l 
+total 8
+-rw-rw-r--+ 1 rcorrent stdnt 106 Mar 26 10:06 hello.html
+-rw-r--r--+ 1 rcorrent stdnt  63 Mar 26 10:17 htaccess
+-rw-rw-r--+ 1 rcorrent stdnt 106 Mar 26 10:09 index.html
+-rwx--x--x+ 1 rcorrent stdnt 198 Mar 26 10:16 index.php*
+-rw-r--r--+ 1 rcorrent stdnt  25 Mar 26 09:57 README
+thunder:50% cat htaccess  
+AddHandler cgi-script .php
+DirectoryIndex index.html index.php
+thunder:51% echo 'note that htaccess specifies the html index first' 
+note that htaccess specifies the html index first
+thunder:52% echo 'this makes it the default' 
+this makes it the default
+thunder:53% 

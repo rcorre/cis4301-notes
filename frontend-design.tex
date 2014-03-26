@@ -1,0 +1,84 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{sverb}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+% Java code with lstlisting
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true
+    tabsize=3
+}
+
+\title{CIS4301 Notes: Frontend Design}
+\author{Ryan Roden-Corrent}
+\date{\today}
+
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+\section{An example website}
+\href{http://www.github.com/cegme/MADden}{MADden}
+\section{CISE Website}
+\href{http://www.cise.ufl.edu/help/web/creating}{This CISE Page} describes how
+to set up a personal website
+\section{In class demo}
+During class, Christian demonstrated how to set up a personal website on the
+CISE servers. I followed along in an ssh session while using tee to pipe stdout
+into a log file in hopes that I could include it here. Unfortunately, tee also
+captured the ansi control codes for every key press, resulting in a huge text
+file that was mostly unreadable. I managed to stip out the escape sequences
+using a selection of hapazardly thrown together regexes and probably lost some
+useful text in the process. What follows are the salvaged remains of my ssh log
+in hope that it may still be of some use:
+\verbinput{./sshlog.txt}
+\subsection{PHP}
+Follow this link for a CISE page on PHP:
+\href{https://www.cise.ufl.edu/help/web/php}{cise PHP help}
+\subsection{Permissions}
+How to read a permission code:\\
+user: \fbox{RWX} group: \fbox{RWX} world: \fbox{RWX}
+Typically expressed in octal.\\
+For example, 644 is RW for user and R for group
+and world.\\
+644 = \fbox{110} \fbox{100} \fbox{100} =
+\fbox{RW} \fbox{R} \fbox{R}
+\end{document}
