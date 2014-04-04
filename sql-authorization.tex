@@ -1,0 +1,173 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+% Java code with lstlisting
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+    language=Java,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true
+    tabsize=3
+}
+
+\title{CIS4301 Notes: Database Design}
+\author{Ryan Roden-Corrent}
+\date{\today}
+
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+\section{SQL Authoriation}
+\href{http://infolab.stanford.edu/~ullman/fcdb/aut07/}{Stanford Slides}
+\begin{itemize}
+  \item {Privileges}
+  \item {Grant and Revoke}
+  \item {Grant Diagrams}
+\end{itemize}
+
+\subsection{Authoriation}
+\begin{itemize}
+  \item {A file system identifies certain privileges on the objects in manages}
+  \item {A file system tracks these privileges for users, groups, and the world}
+  \item {SQL priveleges are more detailed - typically shown in grant diagram}
+\end{itemize}
+
+\href{http://www.postgresql.org/docs/9.2/static/sql-grant.html}
+{See the Postgres Docs on GRANT}
+
+Priveleges can be granted:
+\begin{itemize}
+  \item {per user}
+  \item {per action
+      \begin{itemize}
+        \item {SELECT}
+        \item {INSERT}
+        \item {UPDATE}
+        \item {DELETE}
+        \item {REFERENCES}
+        \item {TRIGGERS}
+      \end{itemize}
+    }
+  \item {per column}
+\end{itemize}
+
+\subsubsection{Roles}
+\begin{itemize}
+  \item {Analogous to users in a filesystem}
+  \item {Each role has its own set of permissions}
+  \item {Permissions can be inherited from roles}
+\end{itemize}
+
+\begin{lstlisting}[language=sql,caption=example query,label={lst:ex1}]
+  INSERT INTO Beers(name)
+  SELECT beer FROM Sells
+  WHERE NOT EXISTS
+    (SELECT * FROM Beers
+    WHERE name = beer);
+\end{lstlisting}
+
+Priveleges Required for \autoref{lst:ex1}:
+\begin{itemize}
+  \item {SELECT on Sells and Beers}
+  \item {INSERT on Beers or Beers.name}
+\end{itemize}
+
+\subsection{Permissions in pgsql}
+\begin{itemize}
+  \item {$\backslash du$ to list roles}
+  \item {$\backslash dp$ to list permissions per table
+    \begin{itemize}
+      \item {Letters represent permissions}
+      \item {Look the up on Postgres docs}
+    \end{itemize}
+  }
+  \item {Superuser}
+\end{itemize}
+
+\subsection{Views as access control}
+Suppose there is a relation \textbf{Emps(name,addr,salary)}
+\begin{lstlisting}[language=sql,caption=view to control access,label={lst:ex2}]
+  CREATE VIEW SafeEmps AS
+  SELECT name, addr FROM Emps;
+\end{lstlisting}
+In \autoref{lst:ex2}, a view is created to allow access to employee name and
+address while hiding their salary. This view is \textbf{updateable}.
+A complex join can prevent a view from being updateable if it does not preserve
+all information from the original tables.
+
+As an example, consider a view that has the same employees but with all of the
+vowels removed from their names. There is no longer a mapping from the modified
+employee names back to their original names (for example, the names Josh and
+Joshe would both map to Jsh in the view).
+
+\subsection{The GRANT Statement}
+\begin{lstlisting}[language=sql,caption=grant format,label={lst:ex3}]
+  GRANT list_of_priveleges
+  ON relation_or_object
+  TO list_of_authorization_ids;
+\end{lstlisting}
+A GRANT option like this could be added to the end of a script to it is run
+every time.
+
+\subsection{The REVOKE Statement}
+\begin{lstlisting}[language=sql,caption=revoke format,label={lst:ex4}]
+  REVKE list_of_priveleges
+  ON relation_or_object
+  FROM list_of_authorization_ids;
+\end{lstlisting}
+\subsubsection{REVOKE Options}
+\begin{description}
+  \item[CASCADE] any grants made by revokee are no longer in force, no matter
+    how far privilege passed
+  \item[RESTRICT] if the privilege was passed to others, the REVOKE fails, as a
+    warning that something else should be done to chase it down
+\end{description}
+Suppose Rick was granted \textbf{UPDATE} on Wins table. Rick grants this
+privilege to Billy, who grants it to Anthony. The path of permission passage is
+tracked in the database. \textbf{REVOKING} this privilege from Billy with the
+\textbf{CASCADE} option would automatically revoke Anthony's privilege too,
+whereas the \textbf{RESTRICT} option would cause the operation to fail until
+Anthony's privilege was revoked too.
+
+However, if Anthony were also granted this privilege by Rick, then he can keep
+the permission, as there is still a user who granted him this permission and
+still has it themself.
+
+\end{document}
