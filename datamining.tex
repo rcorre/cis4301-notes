@@ -1,0 +1,118 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{sverb}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+\title{CIS4301 Notes: Data Mining}
+\author{Ryan Roden-Corrent}
+\date{\today}
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+\section{Frequent Item Sets}
+Frequent Item Sets are an artifact of the data. For example:\\
+\textbf{What is the higest selling product in the DB?}
+
+\section{Associative Rule Mining}
+For example, one notices from the DB that whenever beer is sold, diapers are
+sold.\\
+${Beer \rightarrow Diapers}$ ~ \vline ~
+Represents association from Beer to Diapers\\
+A store could draw the that men who are sent out to buy diapers also
+decide to buy beer, and decide to place diapers and beer in close proximity.
+
+\subsection{Collaborative Filtering}
+Suppose you have a table of Users and Movies. For each row, you know what movie
+each user has watched.
+\begin{table}[H]
+  \centering
+  \caption{Example Table}
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    User1 &  Independence Day & Godfather & I am Legend\\
+    \hline
+    User2 &  & & I am Legend\\
+    \hline
+  \end{tabular}
+\end{table}
+Might consider that User2 would like to watch Independence Day or The Godfather
+because User1 also watched Independence Day.
+
+\subsubsection{The Netflix Prize}
+Netflix offered \$1M to the person who could come up with the most efficient
+algorithm for performing such a computation.
+
+\section{Similarity}
+\subsection{Jaccard distance}
+$ Jaccard Distance = \dfrac{|A \cap B|}{|A \cup B|}$\\
+Usually used for boolean values
+\begin{table}[h]
+  \centering
+  \caption{Jaccard Computation}
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    1 & 0 & 1 & 0\\
+    \hline
+    1 & 0 & 0 & 0\\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Euclidean Distance}
+$\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2 ...}$
+\begin{table}[h]
+  \centering
+  \caption{Jaccard Computation}
+  \begin{tabular}{|c|c|}
+    \hline
+    price & tax \\
+    \hline
+    $x_1$ & $y_1$ \\
+    \hline
+    $x_2$ & $y_2$ \\
+    \hline
+    \vdots & \vdots \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Clustering}
+Visualize a 2D dataset on a plane - clusters may become obvious. These
+represent data items that are significantly closer to some set of values than
+others.
+
+\subsubsection{K-means Clustering}
+Find \textbf{centroids}for each cluster.
+For each point in the data set, assign it to its closest \textbf{centroid}
+(using some distance calculation like Euclidean or Jaccard).
+Adjust centroids to minimize the distances within each cluster. Then compute a
+new centroid, and keep repeating until the centroids no longer move.
+
+A demo is available
+\href{http://home.deib.polimi.it/matteucc/Clustering/tutorial_html/AppletKM.html}
+{HERE}.
+
+\end{document}
