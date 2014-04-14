@@ -1,0 +1,116 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{sverb}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+\lstset{
+  backgroundcolor=\color{lightgray},
+  extendedchars=true,
+  basicstyle=\footnotesize\ttfamily,
+  showstringspaces=false,
+  showspaces=false,
+  numbers=left,
+  numberstyle=\footnotesize,
+  numbersep=9pt,
+  tabsize=2,
+  breaklines=true,
+  showtabs=false,
+}
+
+\title{CIS4301 Notes: Data Mining}
+\author{Ryan Roden-Corrent}
+\date{\today}
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+\section{MapReduce}
+\href{http://cise.ufl.edu/class/cis4301sp14/slides/map_reduce.pdf}
+{MapReduce Class Slides}
+Popular in \textbf{functional} languages (Ruby, Lisp, Python).
+\subsection{Functional Languages}
+Functional languages treat functions as first class objects. Functions take
+other functions as arguments and return them as results. Operators do not
+mutate collections.
+For example:
+\begin{lstlisting}
+  // isprof is a function that returns true if the argument is a professor
+  // list is a list of people, some of which may be professors
+  count(isprof, list);
+\end{lstlisting}
+
+\subsection{Common functions}
+\begin{description}
+  \item [map] apply a function to each element to create a new collection\\
+    \lstinline{map (+3 [1,2,3,4,5] => [4,5,6,7,8]}
+  \item [reduce] apply a function between each element and an accumulator to
+    reduce a list to a single value
+  \item [any] return true if a function returns true for $\ge$ 1 value
+  \item [all]return true if a function returns true for all values
+  \item [filter] keep only values where function returns true
+  \item [fold] like reduce, but take an initial parameter for the accumulator
+\end{description}
+
+\subsection{Unix Philosophy}
+Unix Philosophy: A tool should do one thing well. Complex processes should be
+achieved by chaining several commands together.
+
+\subsection{MapReduce}
+Proposed by Google engineers. It includes:
+\begin{itemize}
+  \item {MapReduce programming model}
+  \item {Google file system}
+  \item {Job scheduling system}
+\end{itemize}
+
+\subsection {MapReduce programming model}
+Generalize map and reduce funtions.
+\begin{lstlisting}[caption=mapreduce example]
+  map(String key, String value):
+    // key: document name
+    // value: document contents
+    for each word w in value:
+      EmitIntermediate(w, "l");
+  reduce(String key, Iterator values):
+    int result = 0;
+    for each v in values:
+      result += ParseInt(v);
+      Emit(AsString(result));
+\end{lstlisting}
+This code runs on a large scale system. The map job is split up between
+various machines. Once these results are obtained, they are passed on to
+another set of machines for reduction. The process of assigning map results to
+reduce machines is called the \textbf{shuffle} step.
+
+\subsubsection{Another Example}
+Suppose you need to count stars in a 1TB jpeg of the night sky. You could split
+the image into sections, use map to count the stars in each section, and reduce
+the section counts into a single sum.
+
+\subsection{Hadoop}
+Google's MapReduce is proprietary, Yahoo created an open source alternative
+called Hadoop.
+
+\end{document}
