@@ -1,0 +1,119 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{sverb}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows, matrix, positioning, fit}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{purple},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\title{CIS4301 Notes: Final Review}
+\author{Ryan Roden-Corrent}
+\date{\today}
+\begin{document}
+\setlength\parindent{0pt}
+% Tikz general settings
+\tikzstyle{relation} = [diamond, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{attribute} = [draw, ellipse, fill=red!20, node distance=2.5cm,
+  minimum height=2em]
+\tikzstyle{entity} = [rectangle, draw, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{relation-weak} = [diamond, double, draw, fill=blue!20, text width=4em,
+  text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{entity-weak} = [rectangle, draw, double, fill=blue!20, text width=5em,
+  text centered, minimum height=4em]
+\tikzstyle{line} = [draw, -]
+\tikzstyle{arrow} = [draw, -latex', thick]
+\tikzstyle{arrow-round} = [draw, -), thick]
+\maketitle
+\section{HTML}
+\begin{itemize}
+  \item {Forms
+    \begin{itemize}
+      \item {Submit form elements to a script}
+      \item {GET: parameters in url, should not modify DB}
+      \item {POST: parameters embedded in request, use for inserts on DB}
+    \end{itemize}}
+\end{itemize}
+\section{URLS}
+\begin{itemize}
+  \item {pass key value pairs to url after the \textbf{?} token
+    \begin{itemize}
+      \item {\lstinline{some.php?key1=val1&key2=val2}}
+    \end{itemize}}
+  \item {Use \textbf{\#} token to reference specific part of page
+    \begin{itemize}
+      \item {\lstinline{some.php#somepageid}}
+    \end{itemize}}
+\end{itemize}
+
+\section{JDBC}
+Example Questions
+\begin{itemize}
+  \item {What does \lstinline{Class.forName("org.mysql.Driver")} do?}
+  \item {What is a cursor?
+    \begin{itemize}
+      \item {Acts like an iterator to look at query results in succession}
+    \end{itemize}}
+\end{itemize}
+
+\subsection{Prepared Statements}
+What are they, what are the benefits?
+\begin{description}
+  \item [Faster] {already partially compiled}
+  \item [Safer] {knows what times to accept, protect against injection}
+\end{description}
+
+\section{Analyze and Explain}
+\begin{description}
+  \item [ANALYZE] {runs query and shows performance stats}
+  \item [EXPLAIN] {Provides info on query plan}
+\end{description}
+
+\section{K Means}
+Used to identify clusters in data, which can grant insight into distinct groups
+that the data represents.
+\begin{enumerate}
+  \item Choose a K (number of clusters)
+  \item Determine centroids
+  \item Assign each point to one of the centroids
+  \item Average points for each centroid
+  \item Determine new centroids
+  \item Repeat until centroids no longer move
+\end{enumerate}
+Can perform K Means multiple times with different values of K to determine
+which K value is most appropriate. Could use a mesurement like average ditance
+between points and centroids to estimate the correctness of a K value.
+
+\section{MapReduce}
+\begin{enumerate}
+  \item {Map - Apply function to collection}
+  \item {Shuffle - Assign map results to reduce machines}
+  \item {Reduce - Apply function to a collection to reduce into accumulator}
+  \item {Combine - Merge reductions into final result}
+\end{enumerate}
+
+\end{document}
